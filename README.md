@@ -1,7 +1,17 @@
 # chai-nearly
 
-[Chai](http://chaijs.com/) compatible assertions
+*Chai-nearly* provides [Chai](http://chaijs.com/) compatible
+deep and shallow assertions
 for things that are the nearly the same.
+
+The package issimilar to
+[chai-roughly](https://github.com/Turbo87/chai-roughly),
+[chai-almost](https://github.com/nmuldavin/chai-almost),
+and
+[chai-stats](https://github.com/chaijs/chai-stats),
+but aims to provide customisable assertions for
+situations where things other than numbers might be
+considered nearly equal.
 
 ## Overview
 
