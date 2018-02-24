@@ -1,6 +1,12 @@
 # chai-nearly
 
-Provides customisable deep and shallow assertions with (or without) tolerance for [Chai](http://chaijs.com/)
+[Chai](http://chaijs.com/) compatible assertions
+for things that are the nearly the same.
+
+## Overview
+
+Chai-nearly is pre-alpha. It may not work as documented and will
+probably introduce breaking changes with on-going development.
 
 ## Installation
 
@@ -64,7 +70,7 @@ it('Should find strings nearly equal', () => {
 ### Deep equals
 
 Chai-nearly comes with its own implementation of
-deep comparison for objects. The aim was to provide
+deep comparison for objects. The aim is to provide
 a certain level of flexibility and
 customisation which may result in performance hits
 in comparision to other implementations.
