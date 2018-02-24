@@ -2,7 +2,7 @@
 
 *Chai-nearly* provides [Chai](http://chaijs.com/) compatible
 deep and shallow assertions
-for things that are the nearly the same.
+for things that are nearly the same.
 
 The package is similar in spirit to
 [chai-roughly](https://github.com/Turbo87/chai-roughly),
