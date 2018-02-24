@@ -4,7 +4,7 @@
 deep and shallow assertions
 for things that are the nearly the same.
 
-The package issimilar to
+The package is similar in spirit to
 [chai-roughly](https://github.com/Turbo87/chai-roughly),
 [chai-almost](https://github.com/nmuldavin/chai-almost),
 and
