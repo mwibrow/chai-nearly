@@ -71,7 +71,7 @@ function compare (lhs: any, rhs: any, options?: any, depth?: number): boolean {
  * @param depth level of recursion, default Number.MAX_SAFE_INTEGER
  * @param parents stack of parents
  */
-function compareHelper(lhs: any, rhs: any, options?: any, depth: number = MAX_DEPTH, parents: any[] = []): boolean {
+function compareHelper(lhs: any, rhs: any, options: any = {}, depth: number = MAX_DEPTH, parents: any[] = []): boolean {
   depth --
   const compare: Function = depth > 0 ? compareHelper : (lhs: any, rhs: any, ...args: any[]) => lhs === rhs
   const lhsType: string = typeof lhs
@@ -80,12 +80,10 @@ function compareHelper(lhs: any, rhs: any, options?: any, depth: number = MAX_DE
   /* Objects */
   if (isObject(lhs)) {
     /* Class prototypes */
-    if (options.byClass) {
-      const chain = getPrototypeChain(lhs)
-      for (let i = 0; i < chain.length; i ++) {
-        if (options.byClass[chain[i]]) {
-          return options.byClass[chain[i]](lhs, rhs, options)
-        }
+    const chain = getPrototypeChain(lhs)
+    for (let i = 0; i < chain.length; i ++) {
+      if (options[chain[i]]) {
+        return options[chain[i]](lhs, rhs, options)
       }
     }
     /* Types */
@@ -93,12 +91,12 @@ function compareHelper(lhs: any, rhs: any, options?: any, depth: number = MAX_DE
       return false
     }
     /* Custom comparitor for types */
-    if (options.byType && options.byType[lhsType]) {
-      return options.byType[lhsType](lhs, rhs, options)
+    if (options[lhsType]) {
+      return options[lhsType](lhs, rhs, options)
     }
     /* Generic 'any' type */
-    if (options.byType && options.byType.any) {
-      return options.byType.any(lhs, rhs, options)
+    if (options.any) {
+      return options.any(lhs, rhs, options)
     }
     /* Arrays */
     if (isArray(lhs)) {
@@ -116,8 +114,8 @@ function compareHelper(lhs: any, rhs: any, options?: any, depth: number = MAX_DE
     if (lhs === rhs) {
       return true
     }
-    const lhsKeys = Object.keys(lhs).filter(key => !isUndefined || options.strict)
-    const rhsKeys = Object.keys(rhs).filter(key => !isUndefined || options.strict)
+    const lhsKeys = Object.keys(lhs).filter(key => !isUndefined(lhs[key]) || options.strict)
+    const rhsKeys = Object.keys(rhs).filter(key => !isUndefined(rhs[key]) || options.strict)
     if (lhsKeys.length !== rhsKeys.length) {
       return false
     }
@@ -126,11 +124,11 @@ function compareHelper(lhs: any, rhs: any, options?: any, depth: number = MAX_DE
         assert && compareHelper(lhs[key], rhs[key], options, depth, parents), true)
   }
   /* Primatives */
-  if (options.byType && options.byType[lhsType]) {
-    return options.byType[lhsType](lhs, rhs, options)
+  if (options[lhsType]) {
+    return options[lhsType](lhs, rhs, options)
   }
-  if (options.byType && options.byType.any) {
-    return options.byType.any(lhs, rhs, options)
+  if (options.any) {
+    return options.any(lhs, rhs, options)
   }
   return lhsType === rhsType && lhs === rhs
 }
@@ -167,11 +165,7 @@ export const numberComparitor: IComparitor = function(lhs: any, rhs: any) {
 }
 
 export const DEEP_EQUAL_DEFAULTS: ICompareOptions = {
-  byType: {
-    number: numberComparitor
-  },
-  strict: true,
-  ignore: []
+  number: numberComparitor
 }
 
 /**

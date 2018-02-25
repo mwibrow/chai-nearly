@@ -116,7 +116,7 @@ describe('Test deepEquals', () => {
       expect(lhs).to.be.not.equal(rhs)
       assert.isFalse(deepEquals(lhs, rhs))
       assert.isTrue(deepEquals(lhs, rhs, {
-        byClass: { Animal: sameLegs }
+        Animal: sameLegs
       }))
     })
 
