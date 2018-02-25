@@ -138,8 +138,6 @@ export interface IComparitor {
 }
 
 export interface ICompareOptions {
-  types?: IDeepEqualComparitors
-  prototypes?: IDeepEqualComparitors,
   strict?: boolean,
   tolerance?: number
   [key: string]: any
