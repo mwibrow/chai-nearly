@@ -73,9 +73,10 @@ function compare (lhs: any, rhs: any, options?: any, depth?: number): boolean {
  */
 function compareHelper(lhs: any, rhs: any, options: any = {}, depth: number = MAX_DEPTH, parents: any[] = []): boolean {
   depth --
-  const compare: Function = depth > 0 ? compareHelper : (lhs: any, rhs: any, ...args: any[]) => lhs === rhs
   const lhsType: string = typeof lhs
   const rhsType: string = typeof rhs
+  const compare: Function = depth > 0 ? compareHelper : (lhs: any, rhs: any, ...args: any[]) =>
+    lhsType === rhsType && lhs === rhs
   let comparison: boolean
   /* Objects */
   if (isObject(lhs)) {
