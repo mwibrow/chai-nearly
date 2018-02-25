@@ -24,15 +24,9 @@ describe('Test chai-nearly', () => {
     expect(4.0).to.nearly(1e-2).equal(4.0 - 1e-3)
   })
 
-  it('Should find numbers equal (tolerance specified as object)', () => {
-    expect(4.0).to.nearly({ tolerance: 1e-2 }).equal(4.0 - 1e-3)
-  })
-
   it('Should find strings nearly equal (using options)', () => {
     const byPrefix = {
-      byType: {
         string: (lhs: string, rhs: string) => lhs.startsWith(rhs)
-      }
     }
     expect('abcdef').to.nearly(byPrefix).equal('abcde')
   })
