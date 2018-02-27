@@ -1,7 +1,7 @@
 import { isFunction, isNumber, isObject } from 'util'
-import { deepEquals, equals, IComparitor, mergeOptions } from './deep-equals'
+import { deepEquals, equals, ICompare, mergeOptions } from './deep-equals'
 
-export type IComparitor = IComparitor
+export type ICompare = ICompare
 
 const TOLERANCE = 1e-6
 
@@ -9,7 +9,7 @@ export function nearlyEqual(lhs: number, rhs: number, tolerance: number = TOLERA
   return Math.abs(lhs - rhs) <= Math.abs(tolerance * Math.min(lhs, rhs))
 }
 
-const numberComparitor: IComparitor = function(
+const numberComparitor: ICompare = function(
   lhs: number, rhs: number, options: any): boolean {
   return nearlyEqual(lhs, rhs, options._tolerance)
 }
@@ -96,7 +96,7 @@ declare global {
       /**
        * @param comparitor A comparitor for comparing objects
        */
-      (comparitor: IComparitor): Assertion
+      (comparitor: ICompare): Assertion
     }
     export interface NearlyAssertion extends NearlyAssertionComparitor {
       /**
