@@ -154,6 +154,11 @@ export interface ICompareTypes {
   [key: string]: IComparison
 }
 
+export interface ICompareConfiguration {
+  options?: ICompareOptions
+  types?: ICompareTypes
+}
+
 export interface ITypeCompare {
   [key: string]: ICompare
 }
@@ -177,6 +182,7 @@ class Comparison implements IComparison {
     this._options = mergeOptions(this._options, options)
     return this
   }
+
   types(types: ICompare | ITypeCompare | ITypeComparison): IComparison {
     this._types = mergeOptions(this._types, types)
     return this
@@ -196,6 +202,18 @@ export interface IDeepEqualIgnoreKeys {
   [key: string]: string[]
 }
 
+export function comparison(config?: ICompareConfiguration): IComparison {
+  const cmp: IComparison = new Comparison()
+  if (config) {
+    if (config.options) {
+      cmp.add.options(config.options)
+    }
+    if (config.types) {
+      cmp.add.types(config.types)
+    }
+  }
+  return cmp
+}
 export const primitiveComparitor: ICompare = function(lhs: any, rhs: any) {
   return typeof lhs === typeof rhs && lhs === rhs
 }

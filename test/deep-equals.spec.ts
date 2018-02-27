@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai'
 import * as chai from 'chai'
 import * as mocha from 'mocha'
-import { deepEquals, equals, IComparitor } from '../lib/deep-equals'
+import { comparison, deepEquals, equals, ICompare, IComparison } from '../lib/deep-equals'
 
 
 describe('Test deepEquals', () => {
@@ -110,7 +110,7 @@ describe('Test deepEquals', () => {
       lhs = new Animal()
       rhs = new Animal()
       rhs.tail = false
-      const sameLegs: IComparitor = (lhs: Animal, rhs: Animal): boolean => {
+      const sameLegs: ICompare = (lhs: Animal, rhs: Animal): boolean => {
         return lhs.legs === rhs.legs
       }
       expect(lhs).to.be.not.equal(rhs)
@@ -211,4 +211,20 @@ describe('Test equals', () => {
     })
   })
 
+})
+
+describe('Test compare classes', () => {
+
+  it('Should create comparison', () => {
+    const cmp: IComparison = comparison().add.options({ tolerance: 1.5 })
+    assert.equal(cmp._options.tolerance, 1.5)
+  })
+
+  it('Should merge options', () => {
+    const cmp: IComparison = comparison()
+    cmp
+      .add.options({ tolerance: 1e-6 })
+      .add.options({ tolerance: 1e-3 })
+    assert.equal(cmp._options.tolerance, 1e-3)
+  })
 })
