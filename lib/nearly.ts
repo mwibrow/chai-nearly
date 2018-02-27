@@ -1,5 +1,5 @@
 import { isFunction, isNumber, isObject } from 'util'
-import { deepEquals, equals, IComparitor } from './deep-equals'
+import { deepEquals, equals, IComparitor, mergeOptions } from './deep-equals'
 
 export type IComparitor = IComparitor
 

@@ -40,7 +40,7 @@ function mergeOptionsHelper(lhs: any, rhs: any): any {
     return rhs
   }
   const options: any = Object.assign({}, lhs)
-  for (let key in rhs) {
+  for (const key in rhs) {
     if (rhs.hasOwnProperty(key)) {
       if (options[key]) {
         options[key] = mergeOptionsHelper(options[key], rhs[key])
@@ -77,7 +77,6 @@ function compareHelper(lhs: any, rhs: any, options: any = {}, depth: number = MA
   const rhsType: string = typeof rhs
   const compare: Function = depth > 0 ? compareHelper : (lhs: any, rhs: any, ...args: any[]) =>
     lhsType === rhsType && lhs === rhs
-  let comparison: boolean
   /* Objects */
   if (isObject(lhs)) {
     /* Class prototypes */
@@ -134,29 +133,74 @@ function compareHelper(lhs: any, rhs: any, options: any = {}, depth: number = MA
   return lhsType === rhsType && lhs === rhs
 }
 
-export interface IComparitor {
+export interface IComparison {
+  add: IComparison
+  _options: ICompareOptions
+  _types: ICompareTypes
+
+  options(options: ICompareOptions): IComparison
+  types(types: ICompare | ITypeCompare | ITypeComparison): IComparison
+}
+
+export interface ICompare {
   (lhs: any, rhs: any, options?: any): boolean
 }
 
 export interface ICompareOptions {
-  strict?: boolean,
-  tolerance?: number
   [key: string]: any
 }
 
+export interface ICompareTypes {
+  [key: string]: IComparison
+}
+
+export interface ITypeCompare {
+  [key: string]: ICompare
+}
+
+export interface ITypeComparison {
+  [key: string]: IComparison
+}
+
+class Comparison implements IComparison {
+
+  add: IComparison
+  _options: ICompareOptions
+  _types: ICompareTypes
+  constructor() {
+    this.add = this
+    this._options = {}
+    this._types = {}
+  }
+
+  options(options: ICompareOptions): IComparison {
+    this._options = mergeOptions(this._options, options)
+    return this
+  }
+  types(types: ICompare | ITypeCompare | ITypeComparison): IComparison {
+    this._types = mergeOptions(this._types, types)
+    return this
+  }
+
+  compare(lhs: any, rhs: any, options: ICompareOptions = {}) {
+    const compareOptions = mergeOptions(this._options, options)
+    return compare(lhs, rhs, compareOptions, compareOptions.depth || MAX_DEPTH)
+  }
+}
+
 export interface IDeepEqualComparitors {
-  [key: string]: IComparitor
+  [key: string]: ICompare
 }
 
 export interface IDeepEqualIgnoreKeys {
   [key: string]: string[]
 }
 
-export const primitiveComparitor: IComparitor = function(lhs: any, rhs: any) {
+export const primitiveComparitor: ICompare = function(lhs: any, rhs: any) {
   return typeof lhs === typeof rhs && lhs === rhs
 }
 
-export const numberComparitor: IComparitor = function(lhs: any, rhs: any) {
+export const numberComparitor: ICompare = function(lhs: any, rhs: any) {
   if (isNaN(lhs)) {
     return isNumber(rhs) && isNaN(rhs)
   }
