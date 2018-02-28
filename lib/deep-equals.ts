@@ -107,7 +107,7 @@ function compareHelper(lhs: any, rhs: any, config: any, depth: number = MAX_DEPT
         return false
       }
       return lhs.reduce((assert: boolean, value: any, index: number) =>
-        assert && compareHelper(value, rhs[index], options, depth, parents), true)
+        assert && compareHelper(value, rhs[index], config, depth, parents), true)
     }
     /* Circular references are ignored */
     if (parents.indexOf(lhs) !== -1) {
@@ -124,7 +124,7 @@ function compareHelper(lhs: any, rhs: any, config: any, depth: number = MAX_DEPT
     }
     return lhsKeys
       .reduce((assert: boolean, key: string) =>
-        assert && compareHelper(lhs[key], rhs[key], options, depth, parents), true)
+        assert && compareHelper(lhs[key], rhs[key], config, depth, parents), true)
   }
   /* Primatives */
   if (types[lhsType]) {
