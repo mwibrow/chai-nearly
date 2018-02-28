@@ -116,7 +116,7 @@ describe('Test deepEquals', () => {
       expect(lhs).to.be.not.equal(rhs)
       assert.isFalse(deepEquals(lhs, rhs))
       assert.isTrue(deepEquals(lhs, rhs, {
-        Animal: sameLegs
+        types: { Animal: sameLegs }
       }))
     })
 
@@ -222,7 +222,6 @@ describe('Test compare classes', () => {
 
   it('Should merge options', () => {
     const cmp: IComparison = comparison()
-    cmp
       .add.options({ tolerance: 1e-6 })
       .add.options({ tolerance: 1e-3 })
     assert.equal(cmp._options.tolerance, 1e-3)

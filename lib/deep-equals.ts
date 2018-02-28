@@ -71,19 +71,22 @@ function compare (lhs: any, rhs: any, options?: any, depth?: number): boolean {
  * @param depth level of recursion, default Number.MAX_SAFE_INTEGER
  * @param parents stack of parents
  */
-function compareHelper(lhs: any, rhs: any, options: any = {}, depth: number = MAX_DEPTH, parents: any[] = []): boolean {
+function compareHelper(lhs: any, rhs: any, config: any, depth: number = MAX_DEPTH, parents: any[] = []): boolean {
   depth --
   const lhsType: string = typeof lhs
   const rhsType: string = typeof rhs
   const compare: Function = depth > 0 ? compareHelper : (lhs: any, rhs: any, ...args: any[]) =>
     lhsType === rhsType && lhs === rhs
+  const options = config.options || {}
+  const types: ICompareTypes = config.types || {}
+
   /* Objects */
   if (isObject(lhs)) {
     /* Class prototypes */
     const chain = getPrototypeChain(lhs)
     for (let i = 0; i < chain.length; i ++) {
-      if (options[chain[i]]) {
-        return options[chain[i]](lhs, rhs, options)
+      if (types[chain[i]]) {
+        return types[chain[i]](lhs, rhs, options)
       }
     }
     /* Types */
@@ -91,12 +94,12 @@ function compareHelper(lhs: any, rhs: any, options: any = {}, depth: number = MA
       return false
     }
     /* Custom comparitor for types */
-    if (options[lhsType]) {
-      return options[lhsType](lhs, rhs, options)
+    if (types[lhsType]) {
+      return types[lhsType](lhs, rhs, options)
     }
     /* Generic 'any' type */
-    if (options.any) {
-      return options.any(lhs, rhs, options)
+    if (types.any) {
+      return types.any(lhs, rhs, options)
     }
     /* Arrays */
     if (isArray(lhs)) {
@@ -124,11 +127,11 @@ function compareHelper(lhs: any, rhs: any, options: any = {}, depth: number = MA
         assert && compareHelper(lhs[key], rhs[key], options, depth, parents), true)
   }
   /* Primatives */
-  if (options[lhsType]) {
-    return options[lhsType](lhs, rhs, options)
+  if (types[lhsType]) {
+    return types[lhsType](lhs, rhs, options)
   }
-  if (options.any) {
-    return options.any(lhs, rhs, options)
+  if (types.any) {
+    return types.any(lhs, rhs, options)
   }
   return lhsType === rhsType && lhs === rhs
 }
@@ -139,7 +142,8 @@ export interface IComparison {
   _types: ICompareTypes
 
   options(options: ICompareOptions): IComparison
-  types(types: ICompare | ITypeCompare | ITypeComparison): IComparison
+  types(types: ICompareTypes): IComparison
+  compare(lhs: any, rhs: any, options?: ICompareOptions): boolean
 }
 
 export interface ICompare {
@@ -151,12 +155,12 @@ export interface ICompareOptions {
 }
 
 export interface ICompareTypes {
-  [key: string]: IComparison
+  [key: string]: ICompare
 }
 
 export interface ICompareConfiguration {
-  options?: ICompareOptions
-  types?: ICompareTypes
+  options: ICompareOptions
+  types: ICompareTypes
 }
 
 export interface ITypeCompare {
@@ -225,8 +229,11 @@ export const numberComparitor: ICompare = function(lhs: any, rhs: any) {
   return lhs === rhs
 }
 
-export const DEEP_EQUAL_DEFAULTS: ICompareOptions = {
-  number: numberComparitor
+export const DEEP_EQUAL_DEFAULTS: ICompareConfiguration = {
+  options: {},
+  types: {
+    number: numberComparitor
+  }
 }
 
 /**
