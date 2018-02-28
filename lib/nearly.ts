@@ -1,5 +1,5 @@
 import { isFunction, isNumber, isObject } from 'util'
-import { deepEquals, equals, ICompare, mergeOptions } from './deep-equals'
+import { deepEquals, equals, ICompare, ICompareConfiguration, mergeOptions } from './deep-equals'
 
 export type ICompare = ICompare
 
@@ -11,11 +11,14 @@ export function nearlyEqual(lhs: number, rhs: number, tolerance: number = TOLERA
 
 const numberComparitor: ICompare = function(
   lhs: number, rhs: number, options: any): boolean {
-  return nearlyEqual(lhs, rhs, options._tolerance)
+  return nearlyEqual(lhs, rhs, options.tolerance)
 }
 
-const DEFAULT_OPTIONS = {
-  number: numberComparitor
+const DEFAULT_OPTIONS: ICompareConfiguration = {
+  options: { tolerance: TOLERANCE },
+  types: {
+    number: numberComparitor
+  }
 }
 
 export function nearly (chai: any, utils: any) {
@@ -26,10 +29,10 @@ export function nearly (chai: any, utils: any) {
     return function checkNearlyEqual (value: any) {
       const obj = this._obj
       const objType = typeof obj
-      const options = flag(this, 'options') || {}
-      if (options[objType] || options.any) {
+      const config = flag(this, 'config') || { options: {}, types: {} }
+      if (config.types[objType] || config.types.any) {
         this.assert(
-          equals(obj, value, options),
+          equals(obj, value, config),
           'expected #{this} to be nearly equal to #{exp} but got #{act}',
           'expected #{this} to be not nearly equal to #{act}',
           value,
@@ -44,10 +47,10 @@ export function nearly (chai: any, utils: any) {
     return function checkNearlyEql (value: any) {
       const obj = this._obj
       const objType = typeof obj
-      const options = flag(this, 'options')
-      if (options[objType] || options.any || isObject(obj)) {
+      const config = flag(this, 'config') || { options: {}, types: {} }
+      if (config.types[objType] || config.types.any || isObject(obj)) {
         this.assert(
-          deepEquals(obj, value, options),
+          deepEquals(obj, value, config),
           'expected #{this} to be nearly deeply equal to #{exp} but got #{act}',
           'expected #{this} to be not nearly deeply equal to #{act}',
           value,
@@ -64,18 +67,18 @@ export function nearly (chai: any, utils: any) {
 
   function chainWithOptions(options: any = TOLERANCE): any {
     if (isNumber(options)) {
-      flag(this, 'options', Object.assign({ _tolerance: options }, DEFAULT_OPTIONS))
+      flag(this, 'config', Object.assign(Object.assign({}, DEFAULT_OPTIONS), { options: { tolerance:  options } }))
     } else {
       if (isFunction(options)) {
-        flag(this, 'options', Object.assign(Object.assign({}, DEFAULT_OPTIONS), { any: options }))
+        flag(this, 'config', Object.assign(Object.assign({}, DEFAULT_OPTIONS), { types: { any: options } }))
       } else {
-        flag(this, 'options', Object.assign(Object.assign({}, DEFAULT_OPTIONS), options || {}))
+        flag(this, 'config', Object.assign(Object.assign({}, DEFAULT_OPTIONS), options || {}))
       }
     }
   }
 
   function chainNoOptions(): any {
-    flag(this, 'options', Object.assign({ tolerance: TOLERANCE }, DEFAULT_OPTIONS))
+    flag(this, 'config', Object.assign({ options: { tolerance: TOLERANCE }, types: {} }, DEFAULT_OPTIONS))
   }
 
   Assertion.addChainableMethod('nearly', chainWithOptions, chainNoOptions)
