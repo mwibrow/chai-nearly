@@ -18,6 +18,9 @@ const DEFAULT_OPTIONS: ICompareConfiguration = {
   options: { tolerance: TOLERANCE },
   types: {
     number: numberComparitor
+  },
+  params: {
+    strict: true
   }
 }
 
@@ -109,5 +112,3 @@ declare global {
     }
   }
 }
-
-
