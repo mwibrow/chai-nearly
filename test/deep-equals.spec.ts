@@ -217,13 +217,13 @@ describe('Test compare classes', () => {
 
   it('Should create comparison', () => {
     const cmp: IComparison = comparison().add.options({ tolerance: 1.5 })
-    assert.equal(cmp._options.tolerance, 1.5)
+    assert.equal(cmp.config.options.tolerance, 1.5)
   })
 
   it('Should merge options', () => {
     const cmp: IComparison = comparison()
       .add.options({ tolerance: 1e-6 })
       .add.options({ tolerance: 1e-3 })
-    assert.equal(cmp._options.tolerance, 1e-3)
+    assert.equal(cmp.config.options.tolerance, 1e-3)
   })
 })

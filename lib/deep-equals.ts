@@ -77,9 +77,9 @@ function compareHelper(lhs: any, rhs: any, config: any, depth: number = MAX_DEPT
   const rhsType: string = typeof rhs
   const compare: Function = depth > 0 ? compareHelper : (lhs: any, rhs: any, ...args: any[]) =>
     lhsType === rhsType && lhs === rhs
-  const options = config.options || {}
+  const options: ICompareOptions = config.options || {}
   const types: ICompareTypes = config.types || {}
-
+  const params: ICompareParams = config.params || {}
   /* Objects */
   if (isObject(lhs)) {
     /* Class prototypes */
@@ -117,8 +117,8 @@ function compareHelper(lhs: any, rhs: any, config: any, depth: number = MAX_DEPT
     if (lhs === rhs) {
       return true
     }
-    const lhsKeys = Object.keys(lhs).filter(key => !isUndefined(lhs[key]) || options.strict)
-    const rhsKeys = Object.keys(rhs).filter(key => !isUndefined(rhs[key]) || options.strict)
+    const lhsKeys = Object.keys(lhs).filter(key => !isUndefined(lhs[key]) || params.strict)
+    const rhsKeys = Object.keys(rhs).filter(key => !isUndefined(rhs[key]) || params.strict)
     if (lhsKeys.length !== rhsKeys.length) {
       return false
     }
@@ -138,12 +138,13 @@ function compareHelper(lhs: any, rhs: any, config: any, depth: number = MAX_DEPT
 
 export interface IComparison {
   add: IComparison
-  _options: ICompareOptions
-  _types: ICompareTypes
+  with: IComparison
+  config: ICompareConfiguration
 
   options(options: ICompareOptions): IComparison
   types(types: ICompareTypes): IComparison
   compare(lhs: any, rhs: any, options?: ICompareOptions): boolean
+  parameters(params: ICompareParams): IComparison
 }
 
 export interface ICompare {
@@ -158,9 +159,15 @@ export interface ICompareTypes {
   [key: string]: ICompare
 }
 
+export interface ICompareParams {
+  depth?: number
+  strict?: boolean
+}
+
 export interface ICompareConfiguration {
   options: ICompareOptions
   types: ICompareTypes
+  params: ICompareParams
 }
 
 export interface ITypeCompare {
@@ -174,27 +181,40 @@ export interface ITypeComparison {
 class Comparison implements IComparison {
 
   add: IComparison
-  _options: ICompareOptions
-  _types: ICompareTypes
+  with: IComparison
+  config: ICompareConfiguration
   constructor() {
     this.add = this
-    this._options = {}
-    this._types = {}
+    this.with = this
+    this.config = {
+      options: {},
+      types: {},
+      params: {}
+    }
   }
 
   options(options: ICompareOptions): IComparison {
-    this._options = mergeOptions(this._options, options)
+    this.config.options = mergeOptions(this.config.options, options)
     return this
   }
 
   types(types: ICompare | ITypeCompare | ITypeComparison): IComparison {
-    this._types = mergeOptions(this._types, types)
+    this.config.types = mergeOptions(this.config.types, types)
     return this
   }
 
-  compare(lhs: any, rhs: any, options: ICompareOptions = {}) {
-    const compareOptions = mergeOptions(this._options, options)
+  compare(lhs: any, rhs: any, options: ICompareOptions = {}): boolean {
+    const compareOptions = mergeOptions(this.config.options, options)
     return compare(lhs, rhs, compareOptions, compareOptions.depth || MAX_DEPTH)
+  }
+
+  parameters(params: ICompareParams): IComparison {
+    Object.assign(this.config.params, params)
+    return this
+  }
+
+  params(params: ICompareParams): IComparison {
+    return this.parameters(params)
   }
 }
 
@@ -233,7 +253,8 @@ export const DEEP_EQUAL_DEFAULTS: ICompareConfiguration = {
   options: {},
   types: {
     number: numberComparitor
-  }
+  },
+  params: {}
 }
 
 /**
