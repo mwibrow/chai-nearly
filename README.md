@@ -84,3 +84,4 @@ deep comparison for objects. The aim is to provide
 a certain level of flexibility and
 customisation which may result in performance hits
 in comparision to other implementations.
+

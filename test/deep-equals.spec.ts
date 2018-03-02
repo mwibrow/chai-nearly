@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai'
 import * as chai from 'chai'
 import * as mocha from 'mocha'
-import { comparison, deepEquals, equals, ICompare, IComparison } from '../lib/deep-equals'
+import { comparison, deepEquals, equals, ICompare, IComparison } from '../src/deep-equals'
 
 
 describe('Test deepEquals', () => {
