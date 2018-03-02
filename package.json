@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Chai plugin for testing near equality of numbers (and other objects)",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "typings": "dist/index",
   "repository": {
     "url": "https://github.com/mwibrow/chai-nearly"
   },
