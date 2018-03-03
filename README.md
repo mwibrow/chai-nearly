@@ -33,7 +33,7 @@ Chai-nearly can be used in JavaScript in the usual manner:
 
 ```
 chai = require('chai')
-nearly = require('nearly')
+nearly = require('chai-nearly')
 
 chai.use(nearly)
 ```
