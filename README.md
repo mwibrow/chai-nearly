@@ -28,7 +28,7 @@ Chai-nearly can be used in JavaScript in the usual manner:
 
 ```
 chai = require('chai')
-nearly = require('../dist/nearly')
+nearly = require('nearly')
 
 chai.use(nearly)
 ```
@@ -39,7 +39,7 @@ imported as follows:
 
 ```
 import * as chai from 'chai'
-import { nearly } from 'chai-nearly'
+import * as nearly from 'chai-nearly'
 
 chai.use(nearly)
 ```
