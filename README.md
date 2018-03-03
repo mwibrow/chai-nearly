@@ -2,12 +2,12 @@
 
 *Chai-nearly* provides [Chai](http://chaijs.com/) compatible
 deep and shallow assertions
-for things that are nearly the same.
+for things that are _nearly_ the same.
 
 The package is similar in spirit to
 [chai-roughly](https://github.com/Turbo87/chai-roughly),
 [chai-almost](https://github.com/nmuldavin/chai-almost),
-and
+and the `almostEqual` assertion from
 [chai-stats](https://github.com/chaijs/chai-stats),
 but aims to provide customisable assertions for
 situations where things other than numbers might be
@@ -20,7 +20,12 @@ probably introduce breaking changes with on-going development.
 
 ## Installation
 
-TODO
+When this package eventually makes to npm:
+
+```
+# Doesn't work currently
+npm install chai-nearly
+```
 
 ## Usage
 
@@ -61,19 +66,19 @@ it('Now passes', () => {
 })
 ```
 
-However custom 'comparitors' can be used
+However custom compare functions can be used
 by passing a function to the `nearly` assertion:
 
 ```
 import * as chai from 'chai'
-import { nearly, IComparitor } from 'chai-nearly'
+import { nearly, ICompare } from 'chai-nearly'
 chai.use(nearly)
 
-const byPrefix: IComparitor =
-  (lhs: string, rhs: string) => lhs.startsWith(rhs)
+const ignoringCase: ICompare = (lhs: string, rhs: string) =>
+  lhs.toLowerCase() === rhs.toLowerCase()
 
-it('Should find strings nearly equal', () => {
-  expect('abcdef').to.nearly(byPrefix).equal('abcde')
+it('Should equal when ignoring case', () => {
+  expect('aBcDe').to.nearly(ignoringCase).equal('AbCdE')
 })
 ```
 
