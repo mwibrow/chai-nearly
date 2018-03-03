@@ -39,7 +39,7 @@ imported as follows:
 
 ```
 import * as chai from 'chai'
-import * as nearly from 'chai-nearly'
+import { nearly } from 'chai-nearly'
 
 chai.use(nearly)
 ```
