@@ -90,22 +90,3 @@ a certain level of flexibility and
 customisation which may result in performance hits
 in comparision to other implementations.
 
-Deep equals is required
-
-```
-function fixture (x: number = 0) {
-  return {
-    a: 1 + x,
-    b: {
-      c: { d: 2 - x },
-      e: 3 + x
-    }
-  }
-}
-it('Should pass', () => {
-  const lhs = fixture()
-  const rhs = fixture(1e-9)
-  expect(lhs).to.not.equal(rhs)
-  expect(lhs).to.nearly.deep.equal(rhs)
-})
-```
