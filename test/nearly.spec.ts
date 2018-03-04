@@ -2,7 +2,8 @@ import { assert, expect } from 'chai'
 import * as chai from 'chai'
 import * as mocha from 'mocha'
 
-import { ICompare, nearly } from '../src/nearly'
+import { nearly } from '../src/chai-nearly'
+import { ICompare } from '../src/deep-equals'
 
 chai.use(nearly)
 

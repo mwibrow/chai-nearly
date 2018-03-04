@@ -189,7 +189,7 @@ function compareHelper(lhs: any, rhs: any, config: ICompareConfiguration, depth:
   return lhsType === rhsType && lhs === rhs
 }
 
-class Comparison implements IComparison {
+export class Comparison implements IComparison {
 
   add: IComparison
   with: IComparison
