@@ -1,5 +1,13 @@
 import { nearly } from './chai-nearly'
-import { deepEquals, ICompare, comparison } from './deep-equals'
+import { deepEquals,
+  Comparison,
+  ICompare,
+  ICompareConfiguration,
+  IComparison,
+  ICompareOptions,
+  ICompareParams,
+  ICompareTypes,
+  comparison } from './deep-equals'
 
 export * from './chai-nearly'
 export * from './deep-equals'
@@ -10,5 +18,11 @@ module.exports = nearly
 module.exports.nearly = nearly
 module.exports.deepEquals = deepEquals
 module.exports.comparison = comparison
-export type ICompare = ICompare
+module.exports.Comparison = Comparison
 
+export type ICompare = ICompare
+export type ICompareConfiguration = ICompareConfiguration
+export type IComparison = IComparison
+export type ICompareOptions = ICompareOptions
+export type ICompareParams = ICompareParams
+export type ICompareTypes = ICompareTypes
