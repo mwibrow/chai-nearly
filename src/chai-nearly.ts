@@ -1,4 +1,4 @@
-import { isFunction, isNumber, isObject } from 'util'
+import { isFunction, isNumber, isObject, isPrimitive } from 'util'
 import * as DeepEquals from './deep-equals'
 
 export type ICompare = DeepEquals.ICompare
@@ -13,11 +13,11 @@ export function nearlyEqual(lhs: number, rhs: number, tolerance: number = TOLERA
 
 const numberComparitor: ICompare = function(
   lhs: number, rhs: number, options: any): boolean {
-  return nearlyEqual(lhs, rhs, options.tolerance)
+  return nearlyEqual(lhs, rhs, options._default)
 }
 
 const DEFAULT_OPTIONS: DeepEquals.ICompareConfiguration = {
-  options: { tolerance: TOLERANCE },
+  options: {},
   types: {
     number: numberComparitor
   },
@@ -71,10 +71,10 @@ export function nearly (chai: any, utils: any) {
   Assertion.overwriteMethod('eql', overrideAssertEql)
   Assertion.overwriteMethod('eqls', overrideAssertEql)
 
-  function chainWithOptions(options: any = TOLERANCE): any {
+  function chainWithOptions(options: any): any {
     const defaults = Object.assign({}, DEFAULT_OPTIONS)
-    if (isNumber(options)) {
-      flag(this, 'config', Object.assign(defaults, { options: { tolerance:  options } }))
+    if (isPrimitive(options)) {
+      flag(this, 'config', Object.assign(defaults, { options: { _default:  options } }))
     } else {
       if (isFunction(options)) {
         flag(this, 'config', Object.assign(defaults, { types: { any: options } }))
