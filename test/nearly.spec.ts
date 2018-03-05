@@ -83,16 +83,15 @@ describe('Test chai-nearly', () => {
     expect(lhs).to.not.nearly.equal(rhs)
     expect(lhs).to.nearly.deep.equal(rhs)
   })
-})
 
+  it('Should pass using initialiser ', () => {
+    const ignoringCase: ICompare =
+      (lhs: string, rhs: string) => lhs.toLowerCase() === rhs.toLowerCase()
+    nearly.initialise(comparison().with.types({ string: ignoringCase }))
+    const lhs: string = 'AbCdEf'
+    const rhs: string = 'aBcDeF'
+    expect(lhs).to.not.equal(rhs)
+    expect(lhs).to.nearly.equal(rhs)
+  })
 
-it('Should test 1 ', () => {
-  const ignoringCase: ICompare =
-    (lhs: string, rhs: string) => lhs.toLowerCase() === rhs.toLowerCase()
-  const cmp = comparison().add.types({ string: ignoringCase })
-  nearly.initialise(cmp)
-  const lhs: string = 'AbCdEf'
-  const rhs: string = 'aBcDeF'
-  expect(lhs).to.not.equal(rhs)
-  // expect(lhs).to.nearly.equal(rhs)
 })

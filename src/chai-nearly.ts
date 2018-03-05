@@ -33,12 +33,16 @@ const DEFAULT_CONFIGURATION: ICompareConfiguration = {
   }
 }
 
-namespace Nearly {
+export function nearly (chai: any, utils: any) {
+  return nearly.nearly(chai, utils)
+}
+
+export namespace nearly {
 
   export let CONFIGURATION: ICompareConfiguration | IComparison = DEFAULT_CONFIGURATION
 
   export function initialise(config?: ICompareConfiguration | IComparison) {
-    Nearly.CONFIGURATION = config || DEFAULT_CONFIGURATION
+    CONFIGURATION = config || DEFAULT_CONFIGURATION
   }
 
   export function nearly (chai: any, utils: any) {
@@ -68,8 +72,8 @@ namespace Nearly {
         const obj: any = this._obj
         const objType: string = typeof obj
         const config: any = flag(this, 'config') ||
-          (Nearly.CONFIGURATION as IComparison).config ||
-          Nearly.CONFIGURATION
+          (CONFIGURATION as IComparison).config ||
+          CONFIGURATION
         if (config.types[objType] || config.types.any || isObject(obj)) {
           this.assert(
             DeepEquals.deepEquals(obj, value, config.config || config),
@@ -89,7 +93,7 @@ namespace Nearly {
     Assertion.overwriteMethod('eqls', overrideAssertEql)
 
     function chainWithOptions(options: any): any {
-      const config = (Nearly.CONFIGURATION as IComparison).config || Nearly.CONFIGURATION
+      const config = (CONFIGURATION as IComparison).config || CONFIGURATION
       const defaults = Object.assign({}, config)
       if (isPrimitive(options)) {
         flag(this, 'config', Object.assign(defaults, { options: { _default:  options } }))
@@ -103,26 +107,15 @@ namespace Nearly {
     }
 
     function chainNoOptions(): any {
-      const config = (Nearly.CONFIGURATION as IComparison).config || Nearly.CONFIGURATION
+      const config = (CONFIGURATION as IComparison).config || CONFIGURATION
       const defaults = Object.assign({}, config)
-      flag(this, 'config', Object.assign({ options: { tolerance: TOLERANCE }, types: {} }, DEFAULT_CONFIGURATION))
+      flag(this, 'config', Object.assign({ options: { tolerance: TOLERANCE }, types: {} }, defaults))
     }
 
     Assertion.addChainableMethod('nearly', chainWithOptions, chainNoOptions)
   }
 
 }
-
-export interface INearly {
-  (chai: any, utils: any): void
-  initialise: (config?: ICompareConfiguration | IComparison) => void
-}
-
-export const nearly = (() => {
-  const nearly = <INearly>Nearly.nearly
-  nearly.initialise = Nearly.initialise
-  return nearly
-})()
 
 declare global {
   export namespace Chai {
