@@ -2,12 +2,14 @@ import { assert, expect } from 'chai'
 import * as chai from 'chai'
 import * as mocha from 'mocha'
 
-import { compare, initialise, nearly } from '../src/chai-nearly'
+import { compare, nearly } from '../src/chai-nearly'
 import { comparison, ICompare } from '../src/deep-equals'
 
 chai.use(nearly)
 
 describe('Test chai-nearly', () => {
+
+  beforeEach( () => nearly.initialise() )
 
   it('Should (using defaults) find numbers equal', () => {
     expect(4.0).to.nearly.equal(4.0)
@@ -88,10 +90,9 @@ it('Should test 1 ', () => {
   const ignoringCase: ICompare =
     (lhs: string, rhs: string) => lhs.toLowerCase() === rhs.toLowerCase()
   const cmp = comparison().add.types({ string: ignoringCase })
-  initialise(cmp)
+  nearly.initialise(cmp)
   const lhs: string = 'AbCdEf'
   const rhs: string = 'aBcDeF'
   expect(lhs).to.not.equal(rhs)
-  expect(lhs).to.nearly.equal(rhs)
-  initialise()
+  // expect(lhs).to.nearly.equal(rhs)
 })
