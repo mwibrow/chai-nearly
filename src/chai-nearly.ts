@@ -14,13 +14,7 @@ export function nearlyEqual(lhs: number, rhs: number, tolerance: number = TOLERA
 
 const numberComparitor: ICompare = function(
   lhs: number, rhs: number, options: any): boolean {
-  return nearlyEqual(lhs, rhs, options._default)
-}
-
-const EMPTY_CONFIGURATION: ICompareConfiguration = {
-  options: {},
-  types: {},
-  params: {}
+  return nearlyEqual(lhs, rhs, options.tolerance || options._default)
 }
 
 const DEFAULT_CONFIGURATION: ICompareConfiguration = {
@@ -53,8 +47,9 @@ export namespace nearly {
       return function checkNearlyEqual (value: any) {
         const obj = this._obj
         const objType = typeof obj
-        const config = flag(this, 'config') || { options: {}, types: {} }
-        if (config.types[objType] || config.types.any) {
+        const config: any = flag(this, 'config') ||
+          (CONFIGURATION as IComparison).config || CONFIGURATION
+        if (config._nearly) {
           this.assert(
             DeepEquals.equals(obj, value, config.config || config),
             'expected #{this} to be nearly equal to #{exp} but got #{act}',
@@ -72,9 +67,8 @@ export namespace nearly {
         const obj: any = this._obj
         const objType: string = typeof obj
         const config: any = flag(this, 'config') ||
-          (CONFIGURATION as IComparison).config ||
-          CONFIGURATION
-        if (config.types[objType] || config.types.any || isObject(obj)) {
+          (CONFIGURATION as IComparison).config || CONFIGURATION
+        if (config._nearly) {
           this.assert(
             DeepEquals.deepEquals(obj, value, config.config || config),
             'expected #{this} to be nearly deeply equal to #{exp} but got #{act}',
@@ -87,6 +81,7 @@ export namespace nearly {
       }
     }
 
+
     Assertion.overwriteMethod('equal', overrideAssertEqual)
     Assertion.overwriteMethod('equals', overrideAssertEqual)
     Assertion.overwriteMethod('eql', overrideAssertEql)
@@ -94,7 +89,7 @@ export namespace nearly {
 
     function chainWithOptions(options: any): any {
       const config = (CONFIGURATION as IComparison).config || CONFIGURATION
-      const defaults = Object.assign({}, config)
+      const defaults = Object.assign({ _nearly: true }, config)
       if (isPrimitive(options)) {
         flag(this, 'config', Object.assign(defaults, { options: { _default:  options } }))
       } else {
@@ -108,8 +103,8 @@ export namespace nearly {
 
     function chainNoOptions(): any {
       const config = (CONFIGURATION as IComparison).config || CONFIGURATION
-      const defaults = Object.assign({}, config)
-      flag(this, 'config', Object.assign({ options: { tolerance: TOLERANCE }, types: {} }, defaults))
+      const defaults = Object.assign({ _nearly: true }, config)
+      flag(this, 'config', Object.assign({ options: { _default: TOLERANCE }, types: {} }, defaults))
     }
 
     Assertion.addChainableMethod('nearly', chainWithOptions, chainNoOptions)

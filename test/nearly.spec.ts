@@ -80,7 +80,7 @@ describe('Test chai-nearly', () => {
     })
     const lhs = fixture(0)
     const rhs = fixture(1e-9)
-    expect(lhs).to.not.nearly.equal(rhs)
+    expect(lhs).to.not.equal(rhs)
     expect(lhs).to.nearly.deep.equal(rhs)
   })
 
