@@ -73,12 +73,13 @@ export namespace nearly {
     function overwritePropertyDeep(_super: any) {
       return function checkModel() {
         const config = flag(this, 'config')
-        if (config._nearly) {
+        if (config && config._nearly) {
           flag(this, 'config', Object.assign(config, { _deep: true }))
         }
         _super.call(this)
       }
     }
+
     Assertion.overwriteMethod('equal', overrideAssertEqual)
     Assertion.overwriteMethod('equals', overrideAssertEqual)
     Assertion.overwriteProperty('deep', overwritePropertyDeep)
