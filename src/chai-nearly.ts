@@ -33,11 +33,17 @@ const DEFAULT_CONFIGURATION: ICompareConfiguration = {
   }
 }
 
-let CONFIGURATION: ICompareConfiguration | IComparison = DEFAULT_CONFIGURATION
 
-export function setConfiguration(config?: ICompareConfiguration | IComparison) {
-  CONFIGURATION = config || DEFAULT_CONFIGURATION
-}
+
+
+namespace Nearly {
+  export let CONFIGURATION: ICompareConfiguration | IComparison = DEFAULT_CONFIGURATION
+
+
+  export function initialise(config?: ICompareConfiguration | IComparison) {
+    console.log('Setting', config || DEFAULT_CONFIGURATION)
+    Nearly.CONFIGURATION = config || DEFAULT_CONFIGURATION
+  }
 
 export function nearly (chai: any, utils: any) {
   const Assertion: any = chai.Assertion
@@ -66,8 +72,8 @@ export function nearly (chai: any, utils: any) {
       const obj: any = this._obj
       const objType: string = typeof obj
       const config: any = flag(this, 'config') ||
-        (CONFIGURATION as IComparison).config ||
-        CONFIGURATION
+        (Nearly.CONFIGURATION as IComparison).config ||
+        Nearly.CONFIGURATION
       if (config.types[objType] || config.types.any || isObject(obj)) {
         this.assert(
           DeepEquals.deepEquals(obj, value, config.config || config),
@@ -87,7 +93,7 @@ export function nearly (chai: any, utils: any) {
   Assertion.overwriteMethod('eqls', overrideAssertEql)
 
   function chainWithOptions(options: any): any {
-    const config = (CONFIGURATION as IComparison).config || CONFIGURATION
+    const config = (Nearly.CONFIGURATION as IComparison).config || Nearly.CONFIGURATION
     const defaults = Object.assign({}, config)
     if (isPrimitive(options)) {
       flag(this, 'config', Object.assign(defaults, { options: { _default:  options } }))
@@ -101,7 +107,7 @@ export function nearly (chai: any, utils: any) {
   }
 
   function chainNoOptions(): any {
-    const config = (CONFIGURATION as IComparison).config || CONFIGURATION
+    const config = (Nearly.CONFIGURATION as IComparison).config || Nearly.CONFIGURATION
     const defaults = Object.assign({}, config)
     flag(this, 'config', Object.assign({ options: { tolerance: TOLERANCE }, types: {} }, DEFAULT_CONFIGURATION))
   }
@@ -109,6 +115,10 @@ export function nearly (chai: any, utils: any) {
   Assertion.addChainableMethod('nearly', chainWithOptions, chainNoOptions)
 }
 
+}
+
+export const nearly = Nearly.nearly
+export const initialise = Nearly.initialise
 
 declare global {
   export namespace Chai {

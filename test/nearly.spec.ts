@@ -2,8 +2,8 @@ import { assert, expect } from 'chai'
 import * as chai from 'chai'
 import * as mocha from 'mocha'
 
-import { nearly } from '../src/chai-nearly'
-import { ICompare } from '../src/deep-equals'
+import { compare, initialise, nearly } from '../src/chai-nearly'
+import { comparison, ICompare } from '../src/deep-equals'
 
 chai.use(nearly)
 
@@ -81,4 +81,17 @@ describe('Test chai-nearly', () => {
     expect(lhs).to.not.nearly.equal(rhs)
     expect(lhs).to.nearly.deep.equal(rhs)
   })
+})
+
+
+it('Should test 1 ', () => {
+  const ignoringCase: ICompare =
+    (lhs: string, rhs: string) => lhs.toLowerCase() === rhs.toLowerCase()
+  const cmp = comparison().add.types({ string: ignoringCase })
+  initialise(cmp)
+  const lhs: string = 'AbCdEf'
+  const rhs: string = 'aBcDeF'
+  expect(lhs).to.not.equal(rhs)
+  expect(lhs).to.nearly.equal(rhs)
+  initialise()
 })
