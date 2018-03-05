@@ -50,6 +50,14 @@ export namespace nearly {
         const config: any = flag(this, 'config') ||
           (CONFIGURATION as IComparison).config || CONFIGURATION
         if (config._nearly) {
+          if (config._deep) {
+            return this.assert(
+              DeepEquals.deepEquals(obj, value, config.config || config),
+              'expected #{this} to be nearly deeply equal to #{exp} but got #{act}',
+              'expected #{this} to be not nearly deeply equal to #{act}',
+              value,
+              obj)
+          }
           this.assert(
             DeepEquals.equals(obj, value, config.config || config),
             'expected #{this} to be nearly equal to #{exp} but got #{act}',
@@ -62,30 +70,18 @@ export namespace nearly {
       }
     }
 
-    function overrideAssertEql (_super: any) {
-      return function checkNearlyEql (value: any) {
-        const obj: any = this._obj
-        const objType: string = typeof obj
-        const config: any = flag(this, 'config') ||
-          (CONFIGURATION as IComparison).config || CONFIGURATION
+    function overwritePropertyDeep(_super: any) {
+      return function checkModel() {
+        const config = flag(this, 'config')
         if (config._nearly) {
-          this.assert(
-            DeepEquals.deepEquals(obj, value, config.config || config),
-            'expected #{this} to be nearly deeply equal to #{exp} but got #{act}',
-            'expected #{this} to be not nearly deeply equal to #{act}',
-            value,
-            obj)
-        } else {
-          _super.apply(this, arguments)
+          flag(this, 'config', Object.assign(config, { _deep: true }))
         }
+        _super.call(this)
       }
     }
-
-
     Assertion.overwriteMethod('equal', overrideAssertEqual)
     Assertion.overwriteMethod('equals', overrideAssertEqual)
-    Assertion.overwriteMethod('eql', overrideAssertEql)
-    Assertion.overwriteMethod('eqls', overrideAssertEql)
+    Assertion.overwriteProperty('deep', overwritePropertyDeep)
 
     function chainWithOptions(options: any): any {
       const config = (CONFIGURATION as IComparison).config || CONFIGURATION

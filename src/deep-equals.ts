@@ -125,7 +125,7 @@ function compare (lhs: any, rhs: any, options?: any, depth?: number): boolean {
  * @param parents stack of parents
  */
 function compareHelper(lhs: any, rhs: any, config: ICompareConfiguration, depth: number = MAX_DEPTH, parents: any[] = []): boolean {
-  depth --
+  depth--
   const lhsType: string = typeof lhs
   const rhsType: string = typeof rhs
   const compare: Function = depth > 0 ? compareHelper : (lhs: any, rhs: any, ...args: any[]) =>
