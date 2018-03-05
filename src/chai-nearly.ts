@@ -118,13 +118,11 @@ export interface INearly {
   initialise: (config?: ICompareConfiguration | IComparison) => void
 }
 
-function getNearly(): INearly {
+export const nearly = (() => {
   const nearly = <INearly>Nearly.nearly
   nearly.initialise = Nearly.initialise
   return nearly
-}
-
-export const nearly = getNearly()
+})()
 
 declare global {
   export namespace Chai {
