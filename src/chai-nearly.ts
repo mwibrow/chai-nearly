@@ -1,5 +1,6 @@
 import { isFunction, isNumber, isObject, isPrimitive } from 'util'
 import * as DeepEquals from './deep-equals'
+import { ICompareConfiguration, IComparison } from './deep-equals'
 
 export type ICompare = DeepEquals.ICompare
 
@@ -16,7 +17,13 @@ const numberComparitor: ICompare = function(
   return nearlyEqual(lhs, rhs, options._default)
 }
 
-const DEFAULT_OPTIONS: DeepEquals.ICompareConfiguration = {
+const EMPTY_CONFIGURATION: ICompareConfiguration = {
+  options: {},
+  types: {},
+  params: {}
+}
+
+const DEFAULT_CONFIGURATION: ICompareConfiguration = {
   options: {},
   types: {
     number: numberComparitor
@@ -24,6 +31,12 @@ const DEFAULT_OPTIONS: DeepEquals.ICompareConfiguration = {
   params: {
     strict: true
   }
+}
+
+let CONFIGURATION: ICompareConfiguration | IComparison = DEFAULT_CONFIGURATION
+
+export function setConfiguration(config?: ICompareConfiguration | IComparison) {
+  CONFIGURATION = config || DEFAULT_CONFIGURATION
 }
 
 export function nearly (chai: any, utils: any) {
@@ -50,9 +63,11 @@ export function nearly (chai: any, utils: any) {
 
   function overrideAssertEql (_super: any) {
     return function checkNearlyEql (value: any) {
-      const obj = this._obj
-      const objType = typeof obj
-      let config: any = flag(this, 'config') || { options: {}, types: {} }
+      const obj: any = this._obj
+      const objType: string = typeof obj
+      const config: any = flag(this, 'config') ||
+        (CONFIGURATION as IComparison).config ||
+        CONFIGURATION
       if (config.types[objType] || config.types.any || isObject(obj)) {
         this.assert(
           DeepEquals.deepEquals(obj, value, config.config || config),
@@ -72,7 +87,8 @@ export function nearly (chai: any, utils: any) {
   Assertion.overwriteMethod('eqls', overrideAssertEql)
 
   function chainWithOptions(options: any): any {
-    const defaults = Object.assign({}, DEFAULT_OPTIONS)
+    const config = (CONFIGURATION as IComparison).config || CONFIGURATION
+    const defaults = Object.assign({}, config)
     if (isPrimitive(options)) {
       flag(this, 'config', Object.assign(defaults, { options: { _default:  options } }))
     } else {
@@ -85,7 +101,9 @@ export function nearly (chai: any, utils: any) {
   }
 
   function chainNoOptions(): any {
-    flag(this, 'config', Object.assign({ options: { tolerance: TOLERANCE }, types: {} }, DEFAULT_OPTIONS))
+    const config = (CONFIGURATION as IComparison).config || CONFIGURATION
+    const defaults = Object.assign({}, config)
+    flag(this, 'config', Object.assign({ options: { tolerance: TOLERANCE }, types: {} }, DEFAULT_CONFIGURATION))
   }
 
   Assertion.addChainableMethod('nearly', chainWithOptions, chainNoOptions)
