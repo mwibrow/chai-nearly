@@ -1,13 +1,5 @@
 import { nearly } from './chai-nearly'
-import { deepEquals,
-  Comparison,
-  ICompare,
-  ICompareConfiguration,
-  IComparison,
-  ICompareOptions,
-  ICompareParams,
-  ICompareTypes,
-  comparison } from './deep-equals'
+import { deepEquals } from './deep-equals'
 
 export * from './chai-nearly'
 export * from './deep-equals'
@@ -17,12 +9,12 @@ module.exports = nearly
 /* Need this for Typescript */
 module.exports.nearly = nearly
 module.exports.deepEquals = deepEquals
-module.exports.comparison = comparison
-module.exports.Comparison = Comparison
+module.exports.comparison = deepEquals.comparison
+module.exports.Comparison = deepEquals.Comparison
 
-export type ICompare = ICompare
-export type ICompareConfiguration = ICompareConfiguration
-export type IComparison = IComparison
-export type ICompareOptions = ICompareOptions
-export type ICompareParams = ICompareParams
-export type ICompareTypes = ICompareTypes
+export type ICompare = deepEquals.ICompare
+export type ICompareConfiguration = deepEquals.ICompareConfiguration
+export type IComparison = deepEquals.IComparison
+export type ICompareOptions = deepEquals.ICompareOptions
+export type ICompareParams = deepEquals.ICompareParams
+export type ICompareTypes = deepEquals.ICompareTypes
