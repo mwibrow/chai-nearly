@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai'
 import * as chai from 'chai'
 import * as mocha from 'mocha'
-import { comparison, deepEquals, equals, ICompare, IComparison } from '../src/deep-equals'
+import { deepEquals } from '../src/deep-equals'
 
 
 describe('Test deepEquals', () => {
@@ -110,7 +110,7 @@ describe('Test deepEquals', () => {
       lhs = new Animal()
       rhs = new Animal()
       rhs.tail = false
-      const sameLegs: ICompare = (lhs: Animal, rhs: Animal): boolean => {
+      const sameLegs: deepEquals.ICompare = (lhs: Animal, rhs: Animal): boolean => {
         return lhs.legs === rhs.legs
       }
       expect(lhs).to.be.not.equal(rhs)
@@ -144,12 +144,12 @@ describe('Test equals', () => {
 
     it('Should show primatives equal', () => {
       const values: any[] = fixture()
-      values.map(value => assert.isTrue(equals(value, value)))
+      values.map(value => assert.isTrue(deepEquals.equals(value, value)))
     })
 
     it('Should show primatives not equal', () => {
       const values: any[] = fixture()
-      values.map(value => assert.isFalse(equals(value, {})))
+      values.map(value => assert.isFalse(deepEquals.equals(value, {})))
     })
 
   })
@@ -157,18 +157,18 @@ describe('Test equals', () => {
   describe('Test equals on arrays', () => {
 
     it('Should show [] === []', () => {
-      assert.isTrue(equals([], []))
+      assert.isTrue(deepEquals.equals([], []))
     })
 
     it('Should show [...] !== []', () => {
-      assert.isFalse(equals([1, 2, 3], []))
+      assert.isFalse(deepEquals.equals([1, 2, 3], []))
     })
 
     it('Should show different arrays with the same values are equal', () => {
       const fixture = (): any[] => [[1, 2, 3], '4', '5', ['6', ['7', '8', [9, 10]]]]
       lhs = fixture()
       rhs = fixture()
-      assert.isTrue(equals(lhs, rhs))
+      assert.isTrue(deepEquals.equals(lhs, rhs))
     })
 
   })
@@ -176,7 +176,7 @@ describe('Test equals', () => {
   describe('Test equals on objects', () => {
 
     it('Should show {} === {}', () => {
-      assert.isTrue(equals({}, {}))
+      assert.isTrue(deepEquals.equals({}, {}))
     })
 
     const fixture = (h: any = 10): any => ({
@@ -201,13 +201,13 @@ describe('Test equals', () => {
     it('Should show different objects with same properties/values are equal', () => {
       lhs = fixture()
       rhs = fixture()
-      assert.isTrue(equals(lhs, rhs))
+      assert.isTrue(deepEquals.equals(lhs, rhs))
     })
 
     it('Should show different objects with different properties/values are equal', () => {
       lhs = fixture()
       rhs = fixture('10')
-      assert.isFalse(equals(lhs, rhs))
+      assert.isFalse(deepEquals.equals(lhs, rhs))
     })
   })
 
@@ -216,12 +216,12 @@ describe('Test equals', () => {
 describe('Test compare classes', () => {
 
   it('Should create comparison', () => {
-    const cmp: IComparison = comparison().add.options({ tolerance: 1.5 })
+    const cmp: deepEquals.IComparison = deepEquals.comparison().add.options({ tolerance: 1.5 })
     assert.equal(cmp.config.options.tolerance, 1.5)
   })
 
   it('Should merge options', () => {
-    const cmp: IComparison = comparison()
+    const cmp: deepEquals.IComparison = deepEquals.comparison()
       .add.options({ tolerance: 1e-6 })
       .add.options({ tolerance: 1e-3 })
     assert.equal(cmp.config.options.tolerance, 1e-3)
