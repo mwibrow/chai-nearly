@@ -2,7 +2,7 @@ import { assert, expect } from 'chai'
 import * as chai from 'chai'
 import * as mocha from 'mocha'
 
-import { nearly } from '../src/chai-nearly'
+import { comparison, ICompare, nearly } from '../src/chai-nearly'
 import { deepEquals } from '../src/deep-equals'
 
 chai.use(nearly)
@@ -35,13 +35,13 @@ describe('Test chai-nearly', () => {
   })
 
   it('Should find strings nearly equal (by prefix) ', () => {
-    const byPrefix: deepEquals.ICompare =
+    const byPrefix: ICompare =
       (lhs: string, rhs: string) => lhs.startsWith(rhs)
     expect('abcdef').to.nearly(byPrefix).equal('abcde')
   })
 
   it('Should find strings nearly equal (ignoring case) ', () => {
-    const ignoringCase: deepEquals.ICompare =
+    const ignoringCase: ICompare =
       (lhs: string, rhs: string) => lhs.toLowerCase() === rhs.toLowerCase()
     const lhs: string = 'AbCdEf'
     const rhs: string = 'aBcDeF'
@@ -49,7 +49,7 @@ describe('Test chai-nearly', () => {
     expect(lhs).to.nearly(ignoringCase).equal(rhs)
   })
 
-  const ignoringOrder: deepEquals.ICompare = (lhs: number[], rhs: number[]) => {
+  const ignoringOrder: ICompare = (lhs: number[], rhs: number[]) => {
     const rhsCopy: number[] = rhs.slice().sort()
     return lhs.length === rhsCopy.length &&
       lhs.sort().reduce((truth: boolean, value: number, i: number) =>
@@ -85,9 +85,9 @@ describe('Test chai-nearly', () => {
   })
 
   it('Should pass using initialiser ', () => {
-    const ignoringCase: deepEquals.ICompare =
+    const ignoringCase: ICompare =
       (lhs: string, rhs: string) => lhs.toLowerCase() === rhs.toLowerCase()
-    nearly.initialise(deepEquals.comparison().with.types({ string: ignoringCase }))
+    nearly.initialise(comparison().with.types({ string: ignoringCase }))
     const lhs: string = 'AbCdEf'
     const rhs: string = 'aBcDeF'
     expect(lhs).to.not.equal(rhs)

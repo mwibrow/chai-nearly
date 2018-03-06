@@ -2,6 +2,13 @@ import { isFunction, isNumber, isObject, isPrimitive } from 'util'
 import { deepEquals } from './deep-equals'
 
 export type ICompare = deepEquals.ICompare
+export type ICompareConfiguration = deepEquals.ICompareConfiguration
+export type IComparison = deepEquals.IComparison
+
+export function comparison(config?: ICompareConfiguration) {
+  return deepEquals.comparison(config)
+}
+
 
 const TOLERANCE = 1e-6
 
@@ -14,7 +21,7 @@ const numberComparitor: ICompare = function(
   return nearlyEqual(lhs, rhs, options.tolerance || options._default)
 }
 
-const DEFAULT_CONFIGURATION: deepEquals.ICompareConfiguration = {
+const DEFAULT_CONFIGURATION: ICompareConfiguration = {
   options: {},
   types: {
     number: numberComparitor
@@ -30,9 +37,9 @@ export function nearly (chai: any, utils: any) {
 
 export namespace nearly {
 
-  export let CONFIGURATION: deepEquals.ICompareConfiguration | deepEquals.IComparison = DEFAULT_CONFIGURATION
+  export let CONFIGURATION: ICompareConfiguration | IComparison = DEFAULT_CONFIGURATION
 
-  export function initialise(config?: deepEquals.ICompareConfiguration | deepEquals.IComparison) {
+  export function initialise(config?: ICompareConfiguration | IComparison) {
     CONFIGURATION = config || DEFAULT_CONFIGURATION
   }
 
