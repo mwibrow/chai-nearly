@@ -9,7 +9,6 @@ export function comparison(config?: ICompareConfiguration) {
   return deepEquals.comparison(config)
 }
 
-
 const TOLERANCE = 1e-6
 
 export function nearlyEqual(lhs: number, rhs: number, tolerance: number = TOLERANCE): boolean {
@@ -138,4 +137,3 @@ declare global {
     }
   }
 }
-
