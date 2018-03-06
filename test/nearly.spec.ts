@@ -2,8 +2,9 @@ import { assert, expect } from 'chai'
 import * as chai from 'chai'
 import * as mocha from 'mocha'
 
-import { comparison, ICompare, nearly } from '../src/chai-nearly'
-import { deepEquals } from '../src/deep-equals'
+import { deepEquals, nearly } from '../src/chai-nearly'
+
+declare type ICompare = deepEquals.ICompare
 
 chai.use(nearly)
 
@@ -87,7 +88,7 @@ describe('Test chai-nearly', () => {
   it('Should pass using initialiser ', () => {
     const ignoringCase: ICompare =
       (lhs: string, rhs: string) => lhs.toLowerCase() === rhs.toLowerCase()
-    nearly.initialise(comparison().with.types({ string: ignoringCase }))
+    nearly.initialise(deepEquals.comparison().with.types({ string: ignoringCase }))
     const lhs: string = 'AbCdEf'
     const rhs: string = 'aBcDeF'
     expect(lhs).to.not.equal(rhs)

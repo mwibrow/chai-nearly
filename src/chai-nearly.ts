@@ -1,13 +1,7 @@
 import { isFunction, isNumber, isObject, isPrimitive } from 'util'
 import { deepEquals } from './deep-equals'
 
-export type ICompare = deepEquals.ICompare
-export type ICompareConfiguration = deepEquals.ICompareConfiguration
-export type IComparison = deepEquals.IComparison
-
-export function comparison(config?: ICompareConfiguration) {
-  return deepEquals.comparison(config)
-}
+export * from './deep-equals'
 
 const TOLERANCE = 1e-6
 
@@ -15,12 +9,12 @@ export function nearlyEqual(lhs: number, rhs: number, tolerance: number = TOLERA
   return Math.abs(lhs - rhs) <= Math.abs(tolerance * Math.min(lhs, rhs))
 }
 
-const numberComparitor: ICompare = function(
+const numberComparitor: deepEquals.ICompare = function(
   lhs: number, rhs: number, options: any): boolean {
   return nearlyEqual(lhs, rhs, options.tolerance || options._default)
 }
 
-const DEFAULT_CONFIGURATION: ICompareConfiguration = {
+const DEFAULT_CONFIGURATION: deepEquals.ICompareConfiguration = {
   options: {},
   types: {
     number: numberComparitor
@@ -36,9 +30,9 @@ export function nearly (chai: any, utils: any) {
 
 export namespace nearly {
 
-  export let CONFIGURATION: ICompareConfiguration | IComparison = DEFAULT_CONFIGURATION
+  export let CONFIGURATION: deepEquals.ICompareConfiguration | deepEquals.IComparison = DEFAULT_CONFIGURATION
 
-  export function initialise(config?: ICompareConfiguration | IComparison) {
+  export function initialise(config?: deepEquals.ICompareConfiguration | deepEquals.IComparison) {
     CONFIGURATION = config || DEFAULT_CONFIGURATION
   }
 
@@ -127,7 +121,7 @@ declare global {
       /**
        * @param comparitor A comparitor for comparing objects
        */
-      (compare: ICompare): Assertion
+      (compare: deepEquals.ICompare): Assertion
     }
     export interface NearlyAssertion extends NearlyAssertionCompare {
       /**
