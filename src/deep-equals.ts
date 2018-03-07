@@ -33,7 +33,8 @@ export namespace deepEquals {
 
   export interface ICompareParams {
     depth?: number
-    strict?: boolean
+    strict?: boolean,
+    undefined?: true
   }
 
   export interface ICompareConfiguration {
@@ -50,6 +51,34 @@ export namespace deepEquals {
     [key: string]: IComparison
   }
 
+  export const primitiveComparitor: ICompare = function(lhs: any, rhs: any) {
+    return typeof lhs === typeof rhs && lhs === rhs
+  }
+
+  export const numberComparitor: ICompare = function(lhs: any, rhs: any) {
+    if (isNaN(lhs)) {
+      return isNumber(rhs) && isNaN(rhs)
+    }
+    return lhs === rhs
+  }
+
+  export const DEEP_EQUAL_DEFAULTS: ICompareConfiguration = {
+    options: {},
+    types: {
+      number: numberComparitor
+    },
+    params: {}
+  }
+  const DEFAULT_PARAMETERS: ICompareParams = {
+    depth: MAX_DEPTH,
+    strict: true,
+    undefined: true
+  }
+  let PARAMETERS: ICompareParams = DEFAULT_PARAMETERS
+
+  export function initialise(parameters?: ICompareParams): void {
+    PARAMETERS = parameters || DEFAULT_PARAMETERS
+  }
 
   /**
    * Recursive comparion equality of objects
@@ -138,9 +167,12 @@ export namespace deepEquals {
       lhsType === rhsType && lhs === rhs
     const options: ICompareOptions = config.options || {}
     const types: ICompareTypes = config.types || {}
-    const params: ICompareParams = config.params || {}
+    const params: ICompareParams = config.params || PARAMETERS
     /* Objects */
     if (isObject(lhs)) {
+      if (depth <= 0 && PARAMETERS.strict) {
+        return lhs === rhs
+      }
       /* Class prototypes */
       const chain = getPrototypeChain(lhs)
       for (let i = 0; i < chain.length; i ++) {
@@ -176,8 +208,8 @@ export namespace deepEquals {
       if (lhs === rhs) {
         return true
       }
-      const lhsKeys = Object.keys(lhs).filter(key => !isUndefined(lhs[key]) || params.strict)
-      const rhsKeys = Object.keys(rhs).filter(key => !isUndefined(rhs[key]) || params.strict)
+      const lhsKeys = Object.keys(lhs).filter(key => !isUndefined(lhs[key]) || params.undefined)
+      const rhsKeys = Object.keys(rhs).filter(key => !isUndefined(rhs[key]) || params.undefined)
       if (lhsKeys.length !== rhsKeys.length) {
         return false
       }
@@ -235,14 +267,6 @@ export namespace deepEquals {
     }
   }
 
-  export interface IDeepEqualComparitors {
-    [key: string]: ICompare
-  }
-
-  export interface IDeepEqualIgnoreKeys {
-    [key: string]: string[]
-  }
-
   export function comparison(config?: ICompareConfiguration): IComparison {
     const cmp: IComparison = new Comparison()
     if (config) {
@@ -254,25 +278,6 @@ export namespace deepEquals {
       }
     }
     return cmp
-  }
-
-  export const primitiveComparitor: ICompare = function(lhs: any, rhs: any) {
-    return typeof lhs === typeof rhs && lhs === rhs
-  }
-
-  export const numberComparitor: ICompare = function(lhs: any, rhs: any) {
-    if (isNaN(lhs)) {
-      return isNumber(rhs) && isNaN(rhs)
-    }
-    return lhs === rhs
-  }
-
-  export const DEEP_EQUAL_DEFAULTS: ICompareConfiguration = {
-    options: {},
-    types: {
-      number: numberComparitor
-    },
-    params: {}
   }
 
   /**
