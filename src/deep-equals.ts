@@ -1,7 +1,8 @@
 import { isArray, isFunction, isNull, isNumber, isObject, isPrimitive, isString, isUndefined } from 'util'
 
 export function deepEquals(lhs: any, rhs: any, config?: deepEquals.ICompareConfiguration): boolean {
-  return deepEquals.compare(lhs, rhs, deepEquals.processOptions(config), deepEquals.MAX_DEPTH)
+  return deepEquals.compare(lhs, rhs, deepEquals.processOptions(config),
+    ((config || {}).params || {}).depth || deepEquals.MAX_DEPTH)
 }
 
 export namespace deepEquals {
