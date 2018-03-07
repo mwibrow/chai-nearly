@@ -14,12 +14,7 @@ export function deepEquals(
   rhs: any,
   config?: deepEquals.ICompareConfiguration
 ): boolean {
-  return deepEquals.compare(
-    lhs,
-    rhs,
-    deepEquals.processOptions(config),
-    deepEquals.MAX_DEPTH
-  )
+  return deepEquals.deepEquals(lhs, rhs, config)
 }
 
 export namespace deepEquals {
@@ -107,9 +102,10 @@ export namespace deepEquals {
   export function deepEquals(
     lhs: any,
     rhs: any,
-    options?: ICompareOptions
+    config?: ICompareOptions
   ): boolean {
-    return compare(lhs, rhs, processOptions(options), MAX_DEPTH)
+    const depth: number = ((config || {}).params || {}).depth || MAX_DEPTH
+    return compare(lhs, rhs, processOptions(config), depth)
   }
 
   /**
