@@ -170,7 +170,7 @@ export namespace deepEquals {
     /* Objects */
     if (isObject(lhs)) {
       if (depth <= 0 && params.strict) {
-        return lhs === rhs
+        return lhsType === rhsType && lhs === rhs
       }
       /* Class prototypes */
       const chain = getPrototypeChain(lhs)

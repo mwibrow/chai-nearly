@@ -20,7 +20,8 @@ const DEFAULT_CONFIGURATION: deepEquals.ICompareConfiguration = {
     number: numberComparitor
   },
   params: {
-    strict: true
+    strict: false,
+    undefined: true
   }
 }
 
