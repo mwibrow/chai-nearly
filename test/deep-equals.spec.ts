@@ -5,10 +5,19 @@ import { deepEquals } from '../src/deep-equals'
 
 describe('Test deepEquals', () => {
   let lhs: any, rhs: any
-  describe('Test deepEquals on primatives', () => {
 
+  describe('Test deepEquals on primatives', () => {
     const fixture = (): any => [
-      true, false, 1, 0, '', 'foo', null, undefined, Number('foo')]
+      true,
+      false,
+      1,
+      0,
+      '',
+      'foo',
+      null,
+      undefined,
+      Number('foo')
+    ]
 
     it('Should show primatives equal', () => {
       const values: any[] = fixture()
@@ -19,11 +28,9 @@ describe('Test deepEquals', () => {
       const values: any[] = fixture()
       values.map(value => assert.isFalse(deepEquals(value, {})))
     })
-
   })
 
   describe('Test deepEquals on arrays', () => {
-
     it('Should show [] === []', () => {
       assert.isTrue(deepEquals([], []))
     })
@@ -33,7 +40,12 @@ describe('Test deepEquals', () => {
     })
 
     it('Should show nested arrays values are equal', () => {
-      const fixture = (): any[] => [[1, 2, 3], '4', '5', ['6', ['7', '8', [9, 10]]]]
+      const fixture = (): any[] => [
+        [1, 2, 3],
+        '4',
+        '5',
+        ['6', ['7', '8', [9, 10]]]
+      ]
       lhs = fixture()
       rhs = fixture()
       expect(lhs).to.be.not.equal(rhs)
@@ -41,16 +53,19 @@ describe('Test deepEquals', () => {
     })
 
     it('Should show nested arrays values are not equal', () => {
-      const fixture = (n: any): any[] => [[1, 2, 3], '4', '5', ['6', ['7', '8', [9, n]]]]
+      const fixture = (n: any): any[] => [
+        [1, 2, 3],
+        '4',
+        '5',
+        ['6', ['7', '8', [9, n]]]
+      ]
       lhs = fixture(10)
       rhs = fixture('10')
       assert.isFalse(deepEquals(lhs, rhs))
     })
-
   })
 
   describe('Test deepEquals on objects', () => {
-
     it('Should show {} === {}', () => {
       assert.isTrue(deepEquals({}, {}))
     })
@@ -63,7 +78,7 @@ describe('Test deepEquals', () => {
         e: {
           f: [7, 8, 9],
           g: null,
-          h : h
+          h: h
         }
       }
     })
@@ -97,7 +112,6 @@ describe('Test deepEquals', () => {
   })
 
   describe('Test deepEquals with custom comparitor', () => {
-
     class Animal {
       legs: number = 4
       claws: boolean = true
@@ -109,14 +123,19 @@ describe('Test deepEquals', () => {
       lhs = new Animal()
       rhs = new Animal()
       rhs.tail = false
-      const sameLegs: deepEquals.ICompare = (lhs: Animal, rhs: Animal): boolean => {
+      const sameLegs: deepEquals.ICompare = (
+        lhs: Animal,
+        rhs: Animal
+      ): boolean => {
         return lhs.legs === rhs.legs
       }
       expect(lhs).to.be.not.equal(rhs)
       assert.isFalse(deepEquals(lhs, rhs))
-      assert.isTrue(deepEquals(lhs, rhs, {
-        types: { Animal: sameLegs }
-      }))
+      assert.isTrue(
+        deepEquals(lhs, rhs, {
+          types: { Animal: sameLegs }
+        })
+      )
     })
 
     it('Should not hang on recursive object references', () => {
@@ -129,20 +148,26 @@ describe('Test deepEquals', () => {
       assert.isTrue(deepEquals(lhs, rhs))
     })
   })
-
 })
 
 describe('Test equals', () => {
-
   let lhs: any, rhs: any
 
   beforeEach(() => {
     deepEquals.initialise()
   })
   describe('Test equals on primatives', () => {
-
     const fixture = (): any => [
-      true, false, 1, 0, '', 'foo', null, undefined, Number('foo')]
+      true,
+      false,
+      1,
+      0,
+      '',
+      'foo',
+      null,
+      undefined,
+      Number('foo')
+    ]
 
     it('Should show primatives equal', () => {
       const values: any[] = fixture()
@@ -153,11 +178,9 @@ describe('Test equals', () => {
       const values: any[] = fixture()
       values.map(value => assert.isFalse(deepEquals.equals(value, {})))
     })
-
   })
 
   describe('Test equals on arrays', () => {
-
     it('Should show [] === []', () => {
       assert.isTrue(deepEquals.equals([], []))
     })
@@ -180,11 +203,9 @@ describe('Test equals', () => {
       deepEquals.initialise({ strict: true })
       assert.isFalse(deepEquals.equals(lhs, rhs))
     })
-
   })
 
   describe('Test equals on objects', () => {
-
     it('Should show {} === {}', () => {
       assert.isTrue(deepEquals.equals({}, {}))
     })
@@ -208,18 +229,19 @@ describe('Test equals', () => {
       assert.isTrue(deepEquals.equals(lhs, rhs))
     })
   })
-
 })
 
 describe('Test compare classes', () => {
-
   it('Should create comparison', () => {
-    const cmp: deepEquals.IComparison = deepEquals.comparison().add.options({ tolerance: 1.5 })
+    const cmp: deepEquals.IComparison = deepEquals
+      .comparison()
+      .add.options({ tolerance: 1.5 })
     assert.equal(cmp.config.options.tolerance, 1.5)
   })
 
   it('Should merge options', () => {
-    const cmp: deepEquals.IComparison = deepEquals.comparison()
+    const cmp: deepEquals.IComparison = deepEquals
+      .comparison()
       .add.options({ tolerance: 1e-6 })
       .add.options({ tolerance: 1e-3 })
     assert.equal(cmp.config.options.tolerance, 1e-3)
