@@ -1,12 +1,12 @@
 import { isArray, isFunction, isNull, isNumber, isObject, isPrimitive, isString, isUndefined } from 'util'
 
-const MAX_DEPTH = Number.MAX_SAFE_INTEGER
-
 export function deepEquals(lhs: any, rhs: any, config?: deepEquals.ICompareConfiguration): boolean {
-  return deepEquals.compare(lhs, rhs, deepEquals.processOptions(config), MAX_DEPTH)
+  return deepEquals.compare(lhs, rhs, deepEquals.processOptions(config), deepEquals.MAX_DEPTH)
 }
 
 export namespace deepEquals {
+
+  export const MAX_DEPTH = Number.MAX_SAFE_INTEGER
 
   export interface IComparison {
     add: IComparison
@@ -62,17 +62,19 @@ export namespace deepEquals {
     return lhs === rhs
   }
 
-  export const DEEP_EQUAL_DEFAULTS: ICompareConfiguration = {
+  export const CONFIGURATION_DEFAULTS: ICompareConfiguration = {
     options: {},
     types: {
       number: numberComparitor
     }
   }
+
   const DEFAULT_PARAMETERS: ICompareParams = {
     depth: MAX_DEPTH,
     strict: false,
     undefined: true
   }
+
   let PARAMETERS: ICompareParams = DEFAULT_PARAMETERS
 
   export function initialise(parameters?: ICompareParams): void {
@@ -101,7 +103,7 @@ export namespace deepEquals {
 
 
   export function processOptions(options?: any) {
-    const processed = mergeOptions(DEEP_EQUAL_DEFAULTS, options || {})
+    const processed = mergeOptions(CONFIGURATION_DEFAULTS, options || {})
     return processed
   }
 
@@ -143,11 +145,11 @@ export namespace deepEquals {
    *
    * @param lhs first object to compare
    * @param rhs second object to compare
-   * @param options options to customer the behaviour of the function
+   * @param config options to customer the behaviour of the function
    * @param depth level of recursion, default Number.MAX_SAFE_INTEGER
    */
-  export function compare (lhs: any, rhs: any, options?: any, depth?: number): boolean {
-    return compareHelper(lhs, rhs, options, depth, [])
+  export function compare (lhs: any, rhs: any, config?: any, depth?: number): boolean {
+    return compareHelper(lhs, rhs, config, depth, [])
   }
 
   /**
