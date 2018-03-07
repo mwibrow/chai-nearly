@@ -1,12 +1,28 @@
-import { isArray, isFunction, isNull, isNumber, isObject, isPrimitive, isString, isUndefined } from 'util'
+import {
+  isArray,
+  isFunction,
+  isNull,
+  isNumber,
+  isObject,
+  isPrimitive,
+  isString,
+  isUndefined
+} from 'util'
 
-export function deepEquals(lhs: any, rhs: any, config?: deepEquals.ICompareConfiguration): boolean {
-  return deepEquals.compare(lhs, rhs, deepEquals.processOptions(config),
-    ((config || {}).params || {}).depth || deepEquals.MAX_DEPTH)
+export function deepEquals(
+  lhs: any,
+  rhs: any,
+  config?: deepEquals.ICompareConfiguration
+): boolean {
+  return deepEquals.compare(
+    lhs,
+    rhs,
+    deepEquals.processOptions(config),
+    deepEquals.MAX_DEPTH
+  )
 }
 
 export namespace deepEquals {
-
   export const MAX_DEPTH = Number.MAX_SAFE_INTEGER
 
   export interface IComparison {
@@ -34,7 +50,7 @@ export namespace deepEquals {
 
   export interface ICompareParams {
     depth?: number
-    strict?: boolean,
+    strict?: boolean
     undefined?: true
   }
 
@@ -88,7 +104,11 @@ export namespace deepEquals {
    * @param rhs second object to compare
    * @param options options to customer the behaviour of the function
    */
-  export function deepEquals(lhs: any, rhs: any, options?: ICompareOptions): boolean {
+  export function deepEquals(
+    lhs: any,
+    rhs: any,
+    options?: ICompareOptions
+  ): boolean {
     return compare(lhs, rhs, processOptions(options), MAX_DEPTH)
   }
 
@@ -98,10 +118,13 @@ export namespace deepEquals {
    * @param rhs second object to compare
    * @param options options to customer the behaviour of the function
    */
-  export function equals(lhs: any, rhs: any, options?: ICompareOptions): boolean {
+  export function equals(
+    lhs: any,
+    rhs: any,
+    options?: ICompareOptions
+  ): boolean {
     return compare(lhs, rhs, processOptions(options), 1)
   }
-
 
   export function processOptions(options?: any) {
     const processed = mergeOptions(CONFIGURATION_DEFAULTS, options || {})
@@ -118,8 +141,9 @@ export namespace deepEquals {
   export function mergeOptions(
     lhs: ICompareOptions,
     rhs: ICompareOptions,
-    deep: boolean = true): ICompareOptions {
-    return (<ICompareOptions>mergeOptionsHelper(lhs, rhs, deep))
+    deep: boolean = true
+  ): ICompareOptions {
+    return <ICompareOptions>mergeOptionsHelper(lhs, rhs, deep)
   }
 
   function mergeOptionsHelper(lhs: any, rhs: any, deep: boolean): any {
@@ -149,8 +173,14 @@ export namespace deepEquals {
    * @param config options to customer the behaviour of the function
    * @param depth level of recursion, default Number.MAX_SAFE_INTEGER
    */
-  export function compare (lhs: any, rhs: any, config?: any, depth?: number): boolean {
-    return compareHelper(lhs, rhs, config, depth, [])
+  export function compare(
+    lhs: any,
+    rhs: any,
+    config?: ICompareConfiguration,
+    depth: number = MAX_DEPTH
+  ): boolean {
+    const maxDepth: number = ((config || {}).params || {}).depth || depth
+    return compareHelper(lhs, rhs, config || {}, maxDepth, [])
   }
 
   /**
@@ -161,12 +191,21 @@ export namespace deepEquals {
    * @param depth level of recursion, default Number.MAX_SAFE_INTEGER
    * @param parents stack of parents
    */
-  function compareHelper(lhs: any, rhs: any, config: ICompareConfiguration, depth: number = MAX_DEPTH, parents: any[] = []): boolean {
+  function compareHelper(
+    lhs: any,
+    rhs: any,
+    config: ICompareConfiguration,
+    depth: number = MAX_DEPTH,
+    parents: any[] = []
+  ): boolean {
     depth--
     const lhsType: string = typeof lhs
     const rhsType: string = typeof rhs
-    const compare: Function = depth > 0 ? compareHelper : (lhs: any, rhs: any, ...args: any[]) =>
-      lhsType === rhsType && lhs === rhs
+    const compare: Function =
+      depth > 0
+        ? compareHelper
+        : (lhs: any, rhs: any, ...args: any[]) =>
+            lhsType === rhsType && lhs === rhs
     const options: ICompareOptions = config.options || {}
     const types: ICompareTypes = config.types || {}
     const params: ICompareParams = config.params || PARAMETERS
@@ -177,7 +216,7 @@ export namespace deepEquals {
       }
       /* Class prototypes */
       const chain = getPrototypeChain(lhs)
-      for (let i = 0; i < chain.length; i ++) {
+      for (let i = 0; i < chain.length; i++) {
         if (types[chain[i]]) {
           return types[chain[i]](lhs, rhs, options)
         }
@@ -199,8 +238,11 @@ export namespace deepEquals {
         if (lhs.length !== rhs.length) {
           return false
         }
-        return lhs.reduce((assert: boolean, value: any, index: number) =>
-          assert && compareHelper(value, rhs[index], config, depth, parents), true)
+        return lhs.reduce(
+          (assert: boolean, value: any, index: number) =>
+            assert && compareHelper(value, rhs[index], config, depth, parents),
+          true
+        )
       }
       /* Circular references are ignored */
       if (parents.indexOf(lhs) !== -1) {
@@ -210,14 +252,20 @@ export namespace deepEquals {
       if (lhs === rhs) {
         return true
       }
-      const lhsKeys = Object.keys(lhs).filter(key => !isUndefined(lhs[key]) || params.undefined)
-      const rhsKeys = Object.keys(rhs).filter(key => !isUndefined(rhs[key]) || params.undefined)
+      const lhsKeys = Object.keys(lhs).filter(
+        key => !isUndefined(lhs[key]) || params.undefined
+      )
+      const rhsKeys = Object.keys(rhs).filter(
+        key => !isUndefined(rhs[key]) || params.undefined
+      )
       if (lhsKeys.length !== rhsKeys.length) {
         return false
       }
-      return lhsKeys
-        .reduce((assert: boolean, key: string) =>
-          assert && compareHelper(lhs[key], rhs[key], config, depth, parents), true)
+      return lhsKeys.reduce(
+        (assert: boolean, key: string) =>
+          assert && compareHelper(lhs[key], rhs[key], config, depth, parents),
+        true
+      )
     }
     /* Primatives */
     if (types[lhsType]) {
@@ -230,7 +278,6 @@ export namespace deepEquals {
   }
 
   export class Comparison implements IComparison {
-
     add: IComparison
     with: IComparison
     config: ICompareConfiguration
@@ -256,7 +303,12 @@ export namespace deepEquals {
 
     compare(lhs: any, rhs: any, options: ICompareOptions = {}): boolean {
       const compareOptions = mergeOptions(this.config.options || {}, options)
-      return compare(lhs, rhs, compareOptions, compareOptions.depth || MAX_DEPTH)
+      return compare(
+        lhs,
+        rhs,
+        compareOptions,
+        compareOptions.depth || MAX_DEPTH
+      )
     }
 
     parameters(params: ICompareParams): IComparison {
@@ -288,7 +340,10 @@ export namespace deepEquals {
    * @param stringify if use the constructor name (the default)
    *   else use the prototype class
    */
-  export function getPrototypeChain(obj: any, stringify: boolean = true): any[] {
+  export function getPrototypeChain(
+    obj: any,
+    stringify: boolean = true
+  ): any[] {
     const chain: any[] = []
     if (stringify) {
       while (obj.__proto__) {

@@ -5,12 +5,19 @@ export * from './deep-equals'
 
 const TOLERANCE = 1e-6
 
-export function nearlyEqual(lhs: number, rhs: number, tolerance: number = TOLERANCE): boolean {
+export function nearlyEqual(
+  lhs: number,
+  rhs: number,
+  tolerance: number = TOLERANCE
+): boolean {
   return Math.abs(lhs - rhs) <= Math.abs(tolerance * Math.min(lhs, rhs))
 }
 
 const numberComparitor: deepEquals.ICompare = function(
-  lhs: number, rhs: number, options: any): boolean {
+  lhs: number,
+  rhs: number,
+  options: any
+): boolean {
   return nearlyEqual(lhs, rhs, options.tolerance || options._default)
 }
 
@@ -25,28 +32,33 @@ const DEFAULT_CONFIGURATION: deepEquals.ICompareConfiguration = {
   }
 }
 
-export function nearly (chai: any, utils: any) {
+export function nearly(chai: any, utils: any) {
   return nearly.nearly(chai, utils)
 }
 
 export namespace nearly {
+  export let CONFIGURATION:
+    | deepEquals.ICompareConfiguration
+    | deepEquals.IComparison = DEFAULT_CONFIGURATION
 
-  export let CONFIGURATION: deepEquals.ICompareConfiguration | deepEquals.IComparison = DEFAULT_CONFIGURATION
-
-  export function initialise(config?: deepEquals.ICompareConfiguration | deepEquals.IComparison) {
+  export function initialise(
+    config?: deepEquals.ICompareConfiguration | deepEquals.IComparison
+  ) {
     CONFIGURATION = config || DEFAULT_CONFIGURATION
   }
 
-  export function nearly (chai: any, utils: any) {
+  export function nearly(chai: any, utils: any) {
     const Assertion: any = chai.Assertion
     const flag: any = utils.flag
 
-    function overrideAssertEqual (_super: any) {
-      return function checkNearlyEqual (value: any) {
+    function overrideAssertEqual(_super: any) {
+      return function checkNearlyEqual(value: any) {
         const obj = this._obj
         const objType = typeof obj
-        const config: any = flag(this, 'config') ||
-          (CONFIGURATION as deepEquals.IComparison).config || CONFIGURATION
+        const config: any =
+          flag(this, 'config') ||
+          (CONFIGURATION as deepEquals.IComparison).config ||
+          CONFIGURATION
         if (config._nearly) {
           if (config._deep) {
             return this.assert(
@@ -54,14 +66,16 @@ export namespace nearly {
               'expected #{this} to be nearly deeply equal to #{exp} but got #{act}',
               'expected #{this} to be not nearly deeply equal to #{act}',
               value,
-              obj)
+              obj
+            )
           }
           this.assert(
             deepEquals.equals(obj, value, config.config || config),
             'expected #{this} to be nearly equal to #{exp} but got #{act}',
             'expected #{this} to be not nearly equal to #{act}',
             value,
-            obj)
+            obj
+          )
         } else {
           _super.apply(this, arguments)
         }
@@ -83,13 +97,22 @@ export namespace nearly {
     Assertion.overwriteProperty('deep', overwritePropertyDeep)
 
     function chainWithOptions(options: any): any {
-      const config = (CONFIGURATION as deepEquals.IComparison).config || CONFIGURATION
+      const config =
+        (CONFIGURATION as deepEquals.IComparison).config || CONFIGURATION
       const defaults = Object.assign({ _nearly: true }, config)
       if (isPrimitive(options)) {
-        flag(this, 'config', Object.assign(defaults, { options: { _default:  options } }))
+        flag(
+          this,
+          'config',
+          Object.assign(defaults, { options: { _default: options } })
+        )
       } else {
         if (isFunction(options)) {
-          flag(this, 'config', Object.assign(defaults, { types: { any: options } }))
+          flag(
+            this,
+            'config',
+            Object.assign(defaults, { types: { any: options } })
+          )
         } else {
           flag(this, 'config', Object.assign(defaults, options || {}))
         }
@@ -97,14 +120,18 @@ export namespace nearly {
     }
 
     function chainNoOptions(): any {
-      const config = (CONFIGURATION as deepEquals.IComparison).config || CONFIGURATION
+      const config =
+        (CONFIGURATION as deepEquals.IComparison).config || CONFIGURATION
       const defaults = Object.assign({ _nearly: true }, config)
-      flag(this, 'config', Object.assign({ options: { _default: TOLERANCE }, types: {} }, defaults))
+      flag(
+        this,
+        'config',
+        Object.assign({ options: { _default: TOLERANCE }, types: {} }, defaults)
+      )
     }
 
     Assertion.addChainableMethod('nearly', chainWithOptions, chainNoOptions)
   }
-
 }
 
 declare global {
