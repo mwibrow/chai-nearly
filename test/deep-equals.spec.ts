@@ -3,7 +3,6 @@ import * as chai from 'chai'
 import * as mocha from 'mocha'
 import { deepEquals } from '../src/deep-equals'
 
-
 describe('Test deepEquals', () => {
   let lhs: any, rhs: any
   describe('Test deepEquals on primatives', () => {
@@ -137,6 +136,9 @@ describe('Test equals', () => {
 
   let lhs: any, rhs: any
 
+  beforeEach(() => {
+    deepEquals.initialise()
+  })
   describe('Test equals on primatives', () => {
 
     const fixture = (): any => [
@@ -165,10 +167,18 @@ describe('Test equals', () => {
     })
 
     it('Should show different arrays with the same values are equal', () => {
-      const fixture = (): any[] => [[1, 2, 3], '4', '5', ['6', ['7', '8', [9, 10]]]]
+      const fixture = (): any[] => [1, 2, 3, '4', '5', '6', '7', '8', 9, 10]
       lhs = fixture()
       rhs = fixture()
       assert.isTrue(deepEquals.equals(lhs, rhs))
+    })
+
+    it('Should show different arrays with the same values are not equal', () => {
+      const fixture = (): any[] => [1, 2, 3, '4', '5', '6', '7', '8', 9, 10]
+      lhs = fixture()
+      rhs = fixture()
+      deepEquals.initialise({ strict: true })
+      assert.isFalse(deepEquals.equals(lhs, rhs))
     })
 
   })
@@ -179,35 +189,23 @@ describe('Test equals', () => {
       assert.isTrue(deepEquals.equals({}, {}))
     })
 
-    const fixture = (h: any = 10): any => ({
+    const fixture = (): any => ({
       a: 1,
-      b: 'two',
-      c: ['three', 'four', { five: 6 }],
-      d: {
-        e: {
-          f: [7, 8, 9],
-          g: null,
-          h : h
-        }
-      }
+      b: 'zwei',
+      c: 'three',
+      d: 'cinq',
+      e: 'shesh'
     })
 
     it('Should show identical objects are equal', () => {
       lhs = fixture()
       expect(lhs).to.be.equal(lhs)
-      // assert.isTrue(equals(lhs, lhs))
     })
 
     it('Should show different objects with same properties/values are equal', () => {
       lhs = fixture()
       rhs = fixture()
       assert.isTrue(deepEquals.equals(lhs, rhs))
-    })
-
-    it('Should show different objects with different properties/values are equal', () => {
-      lhs = fixture()
-      rhs = fixture('10')
-      assert.isFalse(deepEquals.equals(lhs, rhs))
     })
   })
 

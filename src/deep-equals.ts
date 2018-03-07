@@ -66,12 +66,11 @@ export namespace deepEquals {
     options: {},
     types: {
       number: numberComparitor
-    },
-    params: {}
+    }
   }
   const DEFAULT_PARAMETERS: ICompareParams = {
     depth: MAX_DEPTH,
-    strict: true,
+    strict: false,
     undefined: true
   }
   let PARAMETERS: ICompareParams = DEFAULT_PARAMETERS
@@ -97,7 +96,7 @@ export namespace deepEquals {
    * @param options options to customer the behaviour of the function
    */
   export function equals(lhs: any, rhs: any, options?: ICompareOptions): boolean {
-    return compare(lhs, rhs, processOptions(options), 0)
+    return compare(lhs, rhs, processOptions(options), 1)
   }
 
 
@@ -170,7 +169,7 @@ export namespace deepEquals {
     const params: ICompareParams = config.params || PARAMETERS
     /* Objects */
     if (isObject(lhs)) {
-      if (depth <= 0 && PARAMETERS.strict) {
+      if (depth <= 0 && params.strict) {
         return lhs === rhs
       }
       /* Class prototypes */
