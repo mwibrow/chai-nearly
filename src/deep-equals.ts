@@ -41,6 +41,9 @@ export namespace deepEquals {
     (lhs: any, rhs: any, options?: any): boolean
   }
 
+  export interface ICompare3Way extends ICompare {
+    (lhs: any, rhs: any, options?: any): boolean | null
+  }
   export interface ICompareOptions {
     [key: string]: any
   }
@@ -62,7 +65,7 @@ export namespace deepEquals {
   export interface ICompareConfiguration {
     options?: ICompareOptions
     types?: ICompareTypes
-    classes?: ICompare[]
+    classes?: ICompare3Way[]
     params?: ICompareParams
   }
 
@@ -290,8 +293,8 @@ export namespace deepEquals {
     }
 
     class(cls: any, cb: ICompare): IComparison {
-      this.config.classes = (this.config.classes || []).concat([
-        (lhs: any, rhs: any, options?: ICompareOptions): any => {
+      this.config.classes = (this.config.classes || []).concat(<ICompare3Way[]>[
+        (lhs: any, rhs: any, options?: ICompareOptions): boolean | null => {
           if (lhs instanceof cls) {
             return cb(lhs, rhs, options)
           }
