@@ -35,8 +35,6 @@ export namespace deepEquals {
 
   }
 
-  export type ICompareTruth = boolean | null
-
   export interface ICompare {
     (lhs: any, rhs: any, options?: any): boolean
   }

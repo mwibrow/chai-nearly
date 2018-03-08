@@ -123,18 +123,15 @@ describe('Test deepEquals', () => {
       lhs = new Animal()
       rhs = new Animal()
       rhs.tail = false
-      const sameLegs: deepEquals.ICompare = (
-        lhs: Animal,
-        rhs: Animal
-      ): boolean => {
+      const sameLegs: deepEquals.ICompareConfiguration = deepEquals.comparison()
+      .add.class(Animal, (lhs: Animal, rhs: Animal): boolean => {
         return lhs.legs === rhs.legs
-      }
+      }).config
+
       expect(lhs).to.be.not.equal(rhs)
       assert.isFalse(deepEquals(lhs, rhs))
       assert.isTrue(
-        deepEquals(lhs, rhs, {
-          types: { Animal: sameLegs }
-        })
+        deepEquals(lhs, rhs, sameLegs)
       )
     })
 
