@@ -29,7 +29,13 @@ export namespace deepEquals {
     types(types: ICompareTypes): IComparison
     compare(lhs: any, rhs: any, options?: ICompareOptions): boolean
     parameters(params: ICompareParams): IComparison
+
+    class(cls: any, cb: ICompare): IComparison
+    type(type: any, cb: ICompare): IComparison
+
   }
+
+  export type ICompareTruth = boolean | null
 
   export interface ICompare {
     (lhs: any, rhs: any, options?: any): boolean
@@ -49,11 +55,17 @@ export namespace deepEquals {
     undefined?: true
   }
 
+  export interface ICompareClass {
+    (instance: any, cls: any): boolean | null
+  }
+
   export interface ICompareConfiguration {
     options?: ICompareOptions
     types?: ICompareTypes
+    classes?: ICompare[]
     params?: ICompareParams
   }
+
 
   export interface ITypeCompare {
     [key: string]: ICompare
@@ -105,7 +117,7 @@ export namespace deepEquals {
     config?: ICompareOptions
   ): boolean {
     const depth: number = ((config || {}).params || {}).depth || MAX_DEPTH
-    return compare(lhs, rhs, processOptions(config), depth)
+    return compare(lhs, rhs, processOptions(config), depth) || false
   }
 
   /**
@@ -119,7 +131,7 @@ export namespace deepEquals {
     rhs: any,
     options?: ICompareOptions
   ): boolean {
-    return compare(lhs, rhs, processOptions(options), 1)
+    return compare(lhs, rhs, processOptions(options), 1) || false
   }
 
   export function processOptions(options?: any) {
@@ -176,7 +188,7 @@ export namespace deepEquals {
     depth: number = MAX_DEPTH
   ): boolean {
     const maxDepth: number = ((config || {}).params || {}).depth || depth
-    return compareHelper(lhs, rhs, config || {}, maxDepth, [])
+    return compareHelper(lhs, rhs, config || {}, maxDepth, []) || false
   }
 
   /**
@@ -205,29 +217,18 @@ export namespace deepEquals {
     const options: ICompareOptions = config.options || {}
     const types: ICompareTypes = config.types || {}
     const params: ICompareParams = config.params || PARAMETERS
+    const classes: ICompare[] = config.classes || []
     /* Objects */
     if (isObject(lhs)) {
       if (depth <= 0 && params.strict) {
         return lhsType === rhsType && lhs === rhs
       }
       /* Class prototypes */
-      const chain = getPrototypeChain(lhs)
-      for (let i = 0; i < chain.length; i++) {
-        if (types[chain[i]]) {
-          return types[chain[i]](lhs, rhs, options)
+      for (let i = 0; i < classes.length; i++) {
+        const truth = classes[i](lhs, rhs, options)
+        if (!isNull(truth)) {
+          return truth
         }
-      }
-      /* Types */
-      if (lhsType !== rhsType) {
-        return false
-      }
-      /* Custom comparitor for types */
-      if (types[lhsType]) {
-        return types[lhsType](lhs, rhs, options)
-      }
-      /* Generic 'any' type */
-      if (types.any) {
-        return types.any(lhs, rhs, options)
       }
       /* Arrays */
       if (isArray(lhs)) {
@@ -283,8 +284,28 @@ export namespace deepEquals {
       this.config = {
         options: {},
         types: {},
-        params: {}
+        params: {},
+        classes: []
       }
+    }
+
+    class(cls: any, cb: ICompare): IComparison {
+      this.config.classes = (this.config.classes || []).concat([
+        (lhs: any, rhs: any, options?: ICompareOptions): any => {
+          if (lhs instanceof cls) {
+            return cb(lhs, rhs, options)
+          }
+          return null
+        }
+      ])
+      return this
+    }
+
+    type(type: string, cb: ICompare): IComparison {
+      const config: ICompareConfiguration = this.config || {}
+      config.types = config.types || {}
+      config.types[type] = cb
+      return this
     }
 
     options(options: ICompareOptions): IComparison {
@@ -330,28 +351,4 @@ export namespace deepEquals {
     return cmp
   }
 
-  /**
-   * Return the prototype chain for an object
-   * @param obj the object
-   * @param stringify if use the constructor name (the default)
-   *   else use the prototype class
-   */
-  export function getPrototypeChain(
-    obj: any,
-    stringify: boolean = true
-  ): any[] {
-    const chain: any[] = []
-    if (stringify) {
-      while (obj.__proto__) {
-        chain.push(obj.__proto__.constructor.name)
-        obj = obj.__proto__
-      }
-    } else {
-      while (obj.__proto__) {
-        chain.push(obj.__proto__)
-        obj = obj.__proto__
-      }
-    }
-    return chain
-  }
 }
