@@ -231,6 +231,10 @@ export namespace deepEquals {
           return truth
         }
       }
+      /* Types */
+      if (types.any) {
+        return types.any(lhs, rhs, options)
+      }
       /* Arrays */
       if (isArray(lhs)) {
         if (lhs.length !== rhs.length) {
