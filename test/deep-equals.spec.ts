@@ -245,24 +245,18 @@ describe('Test compare classes', () => {
   })
 })
 
-describe('Test deep-equals configuration', () => {
-
-  const fixture = (e: any = undefined): any => ({
-    a: 1,
-    b: 'zwei',
-    c: 'three',
-    d: 'cinq',
-    e: e
-  })
+describe('Test deep-equals on classes', () => {
 
   beforeEach(() => {
     deepEquals.initialise()
   })
 
-  it('Should create comparison', () => {
-    const lhs = fixture(5)
-    const rhs = fixture()
-    assert.isTrue(deepEquals(lhs, rhs))
+  it('Should compare primatives based on class', () => {
+    const lhs = 4
+    const rhs = 4
+    const cmp = deepEquals.comparison()
+      .add.class(Number, deepEquals.numberComparitor)
+    assert.isTrue(deepEquals(lhs, rhs, cmp.config))
   })
 
 })

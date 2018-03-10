@@ -270,6 +270,12 @@ export namespace deepEquals {
       )
     }
     /* Primatives */
+    for (let i = 0; i < classes.length; i++) {
+      const truth = classes[i](lhs, rhs, options)
+      if (!isNull(truth)) {
+        return truth
+      }
+    }
     if (types[lhsType]) {
       return types[lhsType](lhs, rhs, options)
     }
